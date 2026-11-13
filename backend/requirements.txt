@@ -1,0 +1,12 @@
+# Framework web usado para criar a API do FixHub
+Flask==3.1.3
+
+# Biblioteca usada pelo Flask e diretamente pelo FixHub para proteger senhas
+Werkzeug==3.1.9
+
+# Dependências internas do Flask e do Werkzeug
+blinker==1.9.0
+click==8.5.1
+itsdangerous==2.2.0
+Jinja2==3.1.6
+MarkupSafe==3.0.4

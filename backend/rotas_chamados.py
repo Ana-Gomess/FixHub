@@ -168,6 +168,28 @@ def listar_todos_chamados():
     ), 200
 
 
+@chamados_bp.get("/admin/chamados/contagens")
+@requer_perfil("administrador")
+def contar_chamados_por_estado():
+    conexao = conectar_banco()
+    try:
+        registro = conexao.execute(
+            """
+            SELECT
+                COUNT(CASE WHEN estado = 'Aberto' THEN 1 END) AS abertos,
+                COUNT(CASE WHEN estado = 'Em Análise' THEN 1 END) AS em_analise,
+                COUNT(CASE WHEN estado = 'Resolvido' THEN 1 END) AS resolvidos
+            FROM chamados
+            """
+        ).fetchone()
+    except sqlite3.Error:
+        return jsonify({"erro": "Não foi possível contar os chamados."}), 500
+    finally:
+        conexao.close()
+
+    return jsonify({"contagens": dict(registro)}), 200
+
+
 @chamados_bp.patch("/chamados/<int:chamado_id>/estado")
 @requer_perfil("administrador")
 def alterar_estado_chamado(chamado_id):

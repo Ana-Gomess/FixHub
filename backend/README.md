@@ -68,6 +68,10 @@ chamados com o nome do morador. Os filtros opcionais `estado` e `morador_id`
 podem ser usados juntos. Exemplos: `/admin/chamados?estado=Aberto` e
 `/admin/chamados?estado=Resolvido&morador_id=3`.
 
+`GET /admin/chamados/contagens` retorna a quantidade total de chamados em cada
+estado (`abertos`, `em_analise` e `resolvidos`) e também exige perfil
+`administrador`.
+
 ## Alterar estado do chamado
 
 A rota `PATCH /chamados/<id>/estado` exige perfil administrador e recebe o novo

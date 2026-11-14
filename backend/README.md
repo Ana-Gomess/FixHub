@@ -39,10 +39,19 @@ exige login e responde `403` quando o usuário autenticado não tem um dos perfi
 permitidos. Para permitir ambos os perfis em uma rota, use
 `@requer_perfil("morador", "administrador")`.
 
-## Executar os testes
+## Criar chamado
 
-No terminal, entre nesta pasta (`backend`) e execute:
+A rota `POST /chamados` exige uma sessão de morador e recebe JSON com `titulo`,
+`descricao` e `localizacao`. O estado inicial é `Aberto`, e o morador responsável
+é definido pelo usuário autenticado, sem aceitar esses valores do cliente.
 
-```powershell
-.\.venv\Scripts\python.exe -m unittest discover -s tests -v
+Exemplo de corpo:
+
+```json
+{
+  "titulo": "Vazamento na cozinha",
+  "descricao": "Há água saindo do sifão.",
+  "localizacao": "Apartamento 12"
+}
 ```
+

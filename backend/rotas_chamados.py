@@ -10,6 +10,11 @@ from permissoes import requer_perfil
 chamados_bp = Blueprint("chamados", __name__)
 
 ESTADOS_VALIDOS = {"Aberto", "Em Análise", "Resolvido"}
+TRANSICOES_PERMITIDAS = {
+    "Aberto": {"Em Análise", "Resolvido"},
+    "Em Análise": {"Resolvido"},
+    "Resolvido": set(),
+}
 
 
 @chamados_bp.post("/chamados")
@@ -101,6 +106,25 @@ def alterar_estado_chamado(chamado_id):
 
     conexao = conectar_banco()
     try:
+        registro = conexao.execute(
+            "SELECT estado FROM chamados WHERE id = ?",
+            (chamado_id,),
+        ).fetchone()
+
+        if registro is None:
+            return jsonify({"erro": "Chamado não encontrado."}), 404
+
+        estado_atual = registro["estado"]
+        if estado not in TRANSICOES_PERMITIDAS.get(estado_atual, set()):
+            return jsonify(
+                {
+                    "erro": (
+                        f"Não é permitido alterar o estado de "
+                        f"'{estado_atual}' para '{estado}'."
+                    )
+                }
+            ), 400
+
         cursor = conexao.execute(
             "UPDATE chamados SET estado = ? WHERE id = ?",
             (estado, chamado_id),

@@ -132,10 +132,30 @@ def alterar_estado_chamado(chamado_id):
         if cursor.rowcount == 0:
             return jsonify({"erro": "Chamado não encontrado."}), 404
 
+        conexao.execute(
+            """
+            INSERT INTO historico_estados (
+                chamado_id,
+                estado_anterior,
+                estado_novo,
+                administrador_id
+            )
+            VALUES (?, ?, ?, ?)
+            """,
+            (
+                chamado_id,
+                estado_atual,
+                estado,
+                g.usuario_atual["id"],
+            ),
+        )
+
         conexao.commit()
     except sqlite3.Error:
         conexao.rollback()
-        return jsonify({"erro": "Não foi possível alterar o estado do chamado."}), 500
+        return jsonify(
+            {"erro": "Não foi possível alterar o estado do chamado."}
+        ), 500
     finally:
         conexao.close()
 

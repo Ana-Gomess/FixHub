@@ -61,6 +61,13 @@ A rota `GET /chamados` exige perfil `morador` e retorna somente os chamados do
 usuário autenticado, incluindo o estado atual. Se ele ainda não tiver chamados,
 a resposta contém uma lista vazia.
 
+## Painel de chamados do administrador
+
+`GET /admin/chamados` exige perfil `administrador` e retorna a lista geral de
+chamados com o nome do morador. Os filtros opcionais `estado` e `morador_id`
+podem ser usados juntos. Exemplos: `/admin/chamados?estado=Aberto` e
+`/admin/chamados?estado=Resolvido&morador_id=3`.
+
 ## Alterar estado do chamado
 
 A rota `PATCH /chamados/<id>/estado` exige perfil administrador e recebe o novo

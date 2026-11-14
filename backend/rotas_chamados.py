@@ -108,23 +108,56 @@ def listar_chamados_do_morador():
 @chamados_bp.get("/admin/chamados")
 @requer_perfil("administrador")
 def listar_todos_chamados():
+    filtros = []
+    parametros = []
+
+    estado = request.args.get("estado")
+    if estado is not None:
+        estado = estado.strip()
+        if estado not in ESTADOS_VALIDOS:
+            return jsonify(
+                {"erro": "Estado inválido. Use: Aberto, Em Análise ou Resolvido."}
+            ), 400
+
+        filtros.append("chamados.estado = ?")
+        parametros.append(estado)
+
+    morador_id = request.args.get("morador_id")
+    if morador_id is not None:
+        try:
+            morador_id = int(morador_id)
+        except ValueError:
+            return jsonify(
+                {"erro": "O parâmetro morador_id deve ser um inteiro positivo."}
+            ), 400
+
+        if morador_id < 1:
+            return jsonify(
+                {"erro": "O parâmetro morador_id deve ser um inteiro positivo."}
+            ), 400
+
+        filtros.append("chamados.morador_id = ?")
+        parametros.append(morador_id)
+
+    consulta = """
+        SELECT
+            chamados.id,
+            chamados.titulo,
+            chamados.descricao,
+            chamados.localizacao,
+            chamados.estado,
+            chamados.morador_id,
+            usuarios.nome AS morador_nome
+        FROM chamados
+        JOIN usuarios ON usuarios.id = chamados.morador_id
+    """
+    if filtros:
+        consulta += " WHERE " + " AND ".join(filtros)
+    consulta += " ORDER BY chamados.id DESC"
+
     conexao = conectar_banco()
     try:
-        registros = conexao.execute(
-            """
-            SELECT
-                chamados.id,
-                chamados.titulo,
-                chamados.descricao,
-                chamados.localizacao,
-                chamados.estado,
-                chamados.morador_id,
-                usuarios.nome AS morador_nome
-            FROM chamados
-                     JOIN usuarios ON usuarios.id = chamados.morador_id
-            ORDER BY chamados.id DESC
-            """
-        ).fetchall()
+        registros = conexao.execute(consulta, parametros).fetchall()
     except sqlite3.Error:
         return jsonify({"erro": "Não foi possível listar os chamados."}), 500
     finally:

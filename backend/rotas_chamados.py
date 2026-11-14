@@ -9,6 +9,8 @@ from permissoes import requer_perfil
 
 chamados_bp = Blueprint("chamados", __name__)
 
+ESTADOS_VALIDOS = {"Aberto", "Em Análise", "Resolvido"}
+
 
 @chamados_bp.post("/chamados")
 @requer_perfil("morador")
@@ -73,3 +75,52 @@ def criar_chamado():
             },
         }
     ), 201
+
+
+@chamados_bp.patch("/chamados/<int:chamado_id>/estado")
+@requer_perfil("administrador")
+def alterar_estado_chamado(chamado_id):
+    dados = request.get_json(silent=True)
+
+    if not isinstance(dados, dict):
+        return jsonify({"erro": "Envie o novo estado em formato JSON."}), 400
+
+    estado = dados.get("estado")
+    if not isinstance(estado, str) or not estado.strip():
+        return jsonify({"erro": "O estado é obrigatório."}), 400
+
+    estado = estado.strip()
+    if estado not in ESTADOS_VALIDOS:
+        return jsonify(
+            {
+                "erro": (
+                    "Estado inválido. Use: Aberto, Em Análise ou Resolvido."
+                )
+            }
+        ), 400
+
+    conexao = conectar_banco()
+    try:
+        cursor = conexao.execute(
+            "UPDATE chamados SET estado = ? WHERE id = ?",
+            (estado, chamado_id),
+        )
+        if cursor.rowcount == 0:
+            return jsonify({"erro": "Chamado não encontrado."}), 404
+
+        conexao.commit()
+    except sqlite3.Error:
+        conexao.rollback()
+        return jsonify({"erro": "Não foi possível alterar o estado do chamado."}), 500
+    finally:
+        conexao.close()
+
+    return jsonify(
+        {
+            "mensagem": "Estado do chamado atualizado com sucesso.",
+            "chamado": {
+                "id": chamado_id,
+                "estado": estado,
+            },
+        }
+    ), 200

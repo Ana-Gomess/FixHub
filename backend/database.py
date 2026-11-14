@@ -27,6 +27,7 @@ def inicializar_banco() -> None:
             )
             """
         )
+
         conexao.execute(
             """
             CREATE TABLE IF NOT EXISTS chamados (
@@ -41,6 +42,22 @@ def inicializar_banco() -> None:
             )
             """
         )
+
+        conexao.execute(
+            """
+            CREATE TABLE IF NOT EXISTS historico_estados (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                chamado_id INTEGER NOT NULL,
+                estado_anterior TEXT NOT NULL,
+                estado_novo TEXT NOT NULL,
+                administrador_id INTEGER NOT NULL,
+                data_hora TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (chamado_id) REFERENCES chamados(id),
+                FOREIGN KEY (administrador_id) REFERENCES usuarios(id)
+            )
+            """
+        )
+
         conexao.commit()
     finally:
         conexao.close()

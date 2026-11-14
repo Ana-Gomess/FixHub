@@ -55,6 +55,12 @@ Exemplo de corpo:
 }
 ```
 
+## Listar chamados do morador
+
+A rota `GET /chamados` exige perfil `morador` e retorna somente os chamados do
+usuário autenticado, incluindo o estado atual. Se ele ainda não tiver chamados,
+a resposta contém uma lista vazia.
+
 ## Alterar estado do chamado
 
 A rota `PATCH /chamados/<id>/estado` exige perfil administrador e recebe o novo

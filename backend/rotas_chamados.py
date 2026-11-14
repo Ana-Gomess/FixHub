@@ -82,6 +82,29 @@ def criar_chamado():
     ), 201
 
 
+@chamados_bp.get("/chamados")
+@requer_perfil("morador")
+def listar_chamados_do_morador():
+    morador_id = g.usuario_atual["id"]
+    conexao = conectar_banco()
+    try:
+        registros = conexao.execute(
+            """
+            SELECT id, titulo, descricao, localizacao, estado
+            FROM chamados
+            WHERE morador_id = ?
+            ORDER BY id DESC
+            """,
+            (morador_id,),
+        ).fetchall()
+    except sqlite3.Error:
+        return jsonify({"erro": "Não foi possível listar os chamados."}), 500
+    finally:
+        conexao.close()
+
+    return jsonify({"chamados": [dict(registro) for registro in registros]}), 200
+
+
 @chamados_bp.patch("/chamados/<int:chamado_id>/estado")
 @requer_perfil("administrador")
 def alterar_estado_chamado(chamado_id):

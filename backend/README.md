@@ -55,3 +55,9 @@ Exemplo de corpo:
 }
 ```
 
+## Alterar estado do chamado
+
+A rota `PATCH /chamados/<id>/estado` exige perfil administrador e recebe o novo
+estado no JSON. As transições permitidas são `Aberto` para `Em Análise` ou
+`Resolvido`, e `Em Análise` para `Resolvido`. `Resolvido` é um estado final.
+

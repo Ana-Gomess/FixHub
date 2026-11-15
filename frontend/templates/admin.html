@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Painel Administrativo | FixHub</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+
+<body>
+
+    <header class="topbar">
+        <a href="/admin" class="marca">
+            <span class="marca-icone">⌂</span>
+            <span>Fix<span>Hub</span></span>
+        </a>
+
+        <button id="botaoSair" class="botao-sair">
+    Sair da conta
+</button>
+
+        <p>Painel de administração</p>
+    </header>
+
+    <main class="pagina">
+
+        <section class="cabecalho-pagina">
+            <div>
+                <span class="subtitulo">ÁREA ADMINISTRATIVA</span>
+                <h1>Gerenciar chamados</h1>
+                <p>
+                    Acompanhe os problemas relatados pelos moradores
+                    e atualize os estados dos atendimentos.
+                </p>
+            </div>
+        </section>
+
+        <section class="conteudo">
+
+            <div class="titulo-lista">
+                <div>
+                    <h2>Chamados registrados</h2>
+                    <p>Visualize e atualize os chamados do condomínio.</p>
+                </div>
+
+                <button type="button" id="botaoAtualizar">
+                    ↻ Atualizar
+                </button>
+            </div>
+
+            <p id="mensagem" role="status" aria-live="polite"></p>
+
+            <div id="listaChamados" class="lista-chamados">
+
+                <div class="carregando">
+                    Carregando chamados...
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+
+</body>
+</html>

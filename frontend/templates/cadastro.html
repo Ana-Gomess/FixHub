@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro | FixHub</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/cadastro.css') }}">
+</head>
+<body>
+
+    <header class="topbar">
+        <a href="/cadastro" class="marca">
+            <span class="marca-icone">⌂</span>
+            <span>Fix<span>Hub</span></span>
+        </a>
+
+        <p>Condomínio bem cuidado, com tudo em um só lugar.</p>
+    </header>
+
+    <main class="pagina">
+        <section class="cadastro-card">
+
+            <div class="logo">
+                <div class="logo-icone">⌂</div>
+                <h1>Fix<span>Hub</span></h1>
+            </div>
+
+            <div class="introducao">
+                <h2>Crie sua conta de morador</h2>
+                <p>
+                    Acesse o sistema e acompanhe seus chamados
+                    de manutenção com facilidade.
+                </p>
+            </div>
+
+            <form id="formCadastro">
+
+                <div class="campo">
+                    <label for="nome">Nome completo</label>
+                    <input
+                        type="text"
+                        id="nome"
+                        name="nome"
+                        placeholder="Digite seu nome"
+                        autocomplete="name"
+                        required
+                    >
+                </div>
+
+                <div class="campo">
+                    <label for="email">E-mail</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Digite seu e-mail"
+                        autocomplete="email"
+                        required
+                    >
+                </div>
+
+                <div class="campo">
+                    <label for="senha">Senha</label>
+
+                    <div class="senha-container">
+                        <input
+                            type="password"
+                            id="senha"
+                            name="senha"
+                            placeholder="Crie uma senha"
+                            autocomplete="new-password"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            id="mostrarSenha"
+                            aria-label="Mostrar senha"
+                        >
+                            Mostrar
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" id="botaoCadastro">
+                    Criar conta
+                </button>
+
+                <p id="mensagem" role="status" aria-live="polite"></p>
+
+            </form>
+
+            <footer class="rodape">
+                <span>Já possui uma conta?</span>
+                <a href="/login">Entrar</a>
+            </footer>
+
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/cadastro.js') }}"></script>
+</body>
+</html>

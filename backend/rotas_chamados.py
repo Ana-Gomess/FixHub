@@ -4,7 +4,8 @@ from flask import Blueprint, g, jsonify, request
 
 from chamado import Chamado
 from database import conectar_banco
-from permissoes import requer_perfil
+from fixhub.domain.permissions import Permissao
+from permissoes import requer_permissao
 
 
 chamados_bp = Blueprint("chamados", __name__)
@@ -18,7 +19,7 @@ TRANSICOES_PERMITIDAS = {
 
 
 @chamados_bp.post("/chamados")
-@requer_perfil("morador")
+@requer_permissao(Permissao.CRIAR_CHAMADO)
 def criar_chamado():
     dados = request.get_json(silent=True)
 
@@ -41,7 +42,7 @@ def criar_chamado():
         titulo=valores["titulo"],
         descricao=valores["descricao"],
         localizacao=valores["localizacao"],
-        morador_id=g.usuario_atual["id"],
+        morador_id=g.usuario_atual.id,
     )
 
     conexao = conectar_banco()
@@ -83,9 +84,9 @@ def criar_chamado():
 
 
 @chamados_bp.get("/chamados")
-@requer_perfil("morador")
+@requer_permissao(Permissao.LISTAR_PROPRIOS_CHAMADOS)
 def listar_chamados_do_morador():
-    morador_id = g.usuario_atual["id"]
+    morador_id = g.usuario_atual.id
     conexao = conectar_banco()
     try:
         registros = conexao.execute(
@@ -106,7 +107,7 @@ def listar_chamados_do_morador():
 
 
 @chamados_bp.get("/admin/chamados")
-@requer_perfil("administrador")
+@requer_permissao(Permissao.LISTAR_TODOS_CHAMADOS)
 def listar_todos_chamados():
     filtros = []
     parametros = []
@@ -169,7 +170,7 @@ def listar_todos_chamados():
 
 
 @chamados_bp.get("/admin/chamados/contagens")
-@requer_perfil("administrador")
+@requer_permissao(Permissao.VER_CONTAGENS)
 def contar_chamados_por_estado():
     conexao = conectar_banco()
     try:
@@ -191,7 +192,7 @@ def contar_chamados_por_estado():
 
 
 @chamados_bp.patch("/chamados/<int:chamado_id>/estado")
-@requer_perfil("administrador")
+@requer_permissao(Permissao.ALTERAR_ESTADO)
 def alterar_estado_chamado(chamado_id):
     dados = request.get_json(silent=True)
 
@@ -254,7 +255,7 @@ def alterar_estado_chamado(chamado_id):
                 chamado_id,
                 estado_atual,
                 estado,
-                g.usuario_atual["id"],
+                g.usuario_atual.id,
             ),
         )
 

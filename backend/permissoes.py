@@ -4,6 +4,8 @@ from functools import wraps
 from flask import g, jsonify, session
 
 from database import conectar_banco
+from fixhub.domain.permissions import Permissao
+from fixhub.domain.usuario_factory import UsuarioFactory
 
 
 PERFIS_VALIDOS = frozenset({"morador", "administrador"})
@@ -22,7 +24,7 @@ def _carregar_usuario_logado():
     try:
         registro = conexao.execute(
             """
-            SELECT id, nome, email, perfil
+            SELECT id, nome, email, senha_hash, perfil
             FROM usuarios
             WHERE id = ?
             """,
@@ -36,7 +38,7 @@ def _carregar_usuario_logado():
         session.pop("usuario_id", None)
         return None
 
-    g.usuario_atual = dict(registro)
+    g.usuario_atual = UsuarioFactory.a_partir_de(registro)
     return g.usuario_atual
 
 
@@ -66,11 +68,32 @@ def requer_perfil(*perfis_permitidos):
         @wraps(funcao)
         @requer_login
         def decorada(*args, **kwargs):
-            if g.usuario_atual["perfil"] not in perfis_permitidos:
+            if g.usuario_atual.perfil not in perfis_permitidos:
                 return jsonify(
                     {"erro": "Você não tem permissão para acessar este recurso."}
                 ), 403
 
+            return funcao(*args, **kwargs)
+
+        return decorada
+
+    return decorator
+
+
+def requer_permissao(permissao: Permissao):
+    """Protege a rota consultando o comportamento polimórfico do perfil."""
+
+    if not isinstance(permissao, Permissao):
+        raise ValueError("Informe uma permissão válida.")
+
+    def decorator(funcao):
+        @wraps(funcao)
+        @requer_login
+        def decorada(*args, **kwargs):
+            if not g.usuario_atual.tem_permissao(permissao):
+                return jsonify(
+                    {"erro": "Você não tem permissão para acessar este recurso."}
+                ), 403
             return funcao(*args, **kwargs)
 
         return decorada

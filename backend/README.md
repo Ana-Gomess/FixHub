@@ -51,27 +51,27 @@ guardada localmente.
 
 ## Proteção de rotas por perfil
 
-Use os decoradores de `permissoes.py` nas rotas que exigem autenticação:
+`Usuario` é a classe abstrata de conta. `Morador` e `Administrador` herdam seus
+dados e definem permissões diferentes. As rotas protegidas consultam
+`tem_permissao`, então cada objeto responde conforme o seu tipo concreto:
 
 ```python
-from flask import g, jsonify
-from permissoes import requer_login, requer_perfil
+from fixhub.domain.permissions import Permissao
+from permissoes import requer_permissao
 
 @chamados_bp.get("/chamados")
-@requer_login
+@requer_permissao(Permissao.LISTAR_PROPRIOS_CHAMADOS)
 def listar_chamados():
-    return jsonify({"usuario_id": g.usuario_atual["id"]})
-
-@chamados_bp.get("/painel")
-@requer_perfil("administrador")
-def painel_administrador():
-    return jsonify({"mensagem": "Acesso administrativo autorizado."})
+    ...
 ```
 
-`requer_login` responde `401` quando não há sessão válida. `requer_perfil` também
-exige login e responde `403` quando o usuário autenticado não tem um dos perfis
-permitidos. Para permitir ambos os perfis em uma rota, use
-`@requer_perfil("morador", "administrador")`.
+`requer_permissao` responde `401` quando não há sessão válida e `403` quando o
+usuário não tem a permissão solicitada. `requer_perfil` continua disponível nas
+rotas antigas enquanto elas são migradas.
+
+O hash da senha fica encapsulado em `Usuario`, é usado por
+`verificar_senha` durante o login e não faz parte de `para_publico()`. O cadastro
+público instancia `Morador`; não é possível escolher o perfil de administrador.
 
 ## Criar chamado
 

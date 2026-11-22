@@ -1,0 +1,11 @@
+from enum import Enum
+
+
+class Permissao(str, Enum):
+    """Ações que os perfis concretos do FixHub podem executar."""
+
+    CRIAR_CHAMADO = "criar_chamado"
+    LISTAR_PROPRIOS_CHAMADOS = "listar_proprios_chamados"
+    LISTAR_TODOS_CHAMADOS = "listar_todos_chamados"
+    VER_CONTAGENS = "ver_contagens"
+    ALTERAR_ESTADO = "alterar_estado"

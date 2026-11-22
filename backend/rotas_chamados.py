@@ -2,11 +2,10 @@ import sqlite3
 
 from flask import Blueprint, current_app, g, jsonify, request
 
-from fixhub.domain.chamado import Chamado
 from fixhub.domain.errors import DadosInvalidos, RecursoNaoEncontrado, SemPermissao
 from fixhub.domain.estado_chamado import EstadoChamado
 from fixhub.domain.permissions import Permissao
-from permissoes import requer_permissao
+from permissoes import requer_login, requer_permissao
 
 
 chamados_bp = Blueprint("chamados", __name__)
@@ -16,36 +15,21 @@ def _dependencias():
     return current_app.extensions["fixhub"]
 
 
+def _servico_chamados():
+    return _dependencias().servico_chamados
+
+
 @chamados_bp.post("/chamados")
 @requer_permissao(Permissao.CRIAR_CHAMADO)
 def criar_chamado():
-    dados = request.get_json(silent=True)
-
-    if not isinstance(dados, dict):
-        return jsonify({"erro": "Envie os dados do chamado em formato JSON."}), 400
-
-    campos = ("titulo", "descricao", "localizacao")
-    if not all(isinstance(dados.get(campo), str) for campo in campos):
-        return jsonify(
-            {"erro": "Título, descrição e localização são obrigatórios."}
-        ), 400
-
-    valores = {campo: dados[campo].strip() for campo in campos}
-    if not all(valores.values()):
-        return jsonify(
-            {"erro": "Título, descrição e localização são obrigatórios."}
-        ), 400
-
-    chamado = Chamado(
-        id=None,
-        titulo=valores["titulo"],
-        descricao=valores["descricao"],
-        localizacao=valores["localizacao"],
-        morador_id=g.usuario_atual.id,
-    )
-
     try:
-        chamado_criado = _dependencias().chamados.salvar(chamado)
+        chamado_criado = _servico_chamados().criar(
+            g.usuario_atual, request.get_json(silent=True)
+        )
+    except DadosInvalidos as erro:
+        return jsonify({"erro": str(erro)}), 400
+    except SemPermissao as erro:
+        return jsonify({"erro": str(erro)}), 403
     except sqlite3.Error:
         return jsonify({"erro": "Não foi possível criar o chamado."}), 500
 
@@ -60,13 +44,32 @@ def criar_chamado():
 @chamados_bp.get("/chamados")
 @requer_permissao(Permissao.LISTAR_PROPRIOS_CHAMADOS)
 def listar_chamados_do_morador():
-    morador_id = g.usuario_atual.id
     try:
-        chamados = _dependencias().chamados.listar_por_morador(morador_id)
+        chamados = _servico_chamados().listar_do_morador(g.usuario_atual)
+    except DadosInvalidos as erro:
+        return jsonify({"erro": str(erro)}), 400
+    except SemPermissao as erro:
+        return jsonify({"erro": str(erro)}), 403
     except sqlite3.Error:
         return jsonify({"erro": "Não foi possível listar os chamados."}), 500
 
     return jsonify({"chamados": [item.para_publico() for item in chamados]}), 200
+
+
+@chamados_bp.get("/chamados/<int:chamado_id>")
+@requer_login
+def detalhar_chamado(chamado_id: int):
+    try:
+        dados = _servico_chamados().detalhes(g.usuario_atual, chamado_id)
+    except DadosInvalidos as erro:
+        return jsonify({"erro": str(erro)}), 400
+    except RecursoNaoEncontrado as erro:
+        return jsonify({"erro": str(erro)}), 404
+    except SemPermissao as erro:
+        return jsonify({"erro": str(erro)}), 403
+    except sqlite3.Error:
+        return jsonify({"erro": "Não foi possível consultar o chamado."}), 500
+    return jsonify(dados), 200
 
 
 @chamados_bp.get("/admin/chamados")

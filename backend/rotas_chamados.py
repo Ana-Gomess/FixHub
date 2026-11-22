@@ -2,20 +2,15 @@ import sqlite3
 
 from flask import Blueprint, g, jsonify, request
 
-from chamado import Chamado
 from database import conectar_banco
+from fixhub.domain.chamado import Chamado
+from fixhub.domain.errors import DadosInvalidos, SemPermissao
+from fixhub.domain.estado_chamado import EstadoChamado
 from fixhub.domain.permissions import Permissao
 from permissoes import requer_permissao
 
 
 chamados_bp = Blueprint("chamados", __name__)
-
-ESTADOS_VALIDOS = {"Aberto", "Em Análise", "Resolvido"}
-TRANSICOES_PERMITIDAS = {
-    "Aberto": {"Em Análise", "Resolvido"},
-    "Em Análise": {"Resolvido"},
-    "Resolvido": set(),
-}
 
 
 @chamados_bp.post("/chamados")
@@ -39,6 +34,7 @@ def criar_chamado():
         ), 400
 
     chamado = Chamado(
+        id=None,
         titulo=valores["titulo"],
         descricao=valores["descricao"],
         localizacao=valores["localizacao"],
@@ -56,12 +52,12 @@ def criar_chamado():
                 chamado.titulo,
                 chamado.descricao,
                 chamado.localizacao,
-                chamado.estado,
+                chamado.estado.value,
                 chamado.morador_id,
             ),
         )
         conexao.commit()
-        chamado_id = cursor.lastrowid
+        chamado_criado = chamado.com_id(cursor.lastrowid)
     except sqlite3.Error:
         conexao.rollback()
         return jsonify({"erro": "Não foi possível criar o chamado."}), 500
@@ -71,14 +67,7 @@ def criar_chamado():
     return jsonify(
         {
             "mensagem": "Chamado criado com sucesso.",
-            "chamado": {
-                "id": chamado_id,
-                "titulo": chamado.titulo,
-                "descricao": chamado.descricao,
-                "localizacao": chamado.localizacao,
-                "estado": chamado.estado,
-                "morador_id": chamado.morador_id,
-            },
+            "chamado": chamado_criado.para_publico(incluir_morador_id=True),
         }
     ), 201
 
@@ -114,14 +103,15 @@ def listar_todos_chamados():
 
     estado = request.args.get("estado")
     if estado is not None:
-        estado = estado.strip()
-        if estado not in ESTADOS_VALIDOS:
+        try:
+            estado = EstadoChamado.converter(estado)
+        except DadosInvalidos as erro:
             return jsonify(
-                {"erro": "Estado inválido. Use: Aberto, Em Análise ou Resolvido."}
+                {"erro": str(erro)}
             ), 400
 
         filtros.append("chamados.estado = ?")
-        parametros.append(estado)
+        parametros.append(estado.value)
 
     morador_id = request.args.get("morador_id")
     if morador_id is not None:
@@ -199,44 +189,45 @@ def alterar_estado_chamado(chamado_id):
     if not isinstance(dados, dict):
         return jsonify({"erro": "Envie o novo estado em formato JSON."}), 400
 
-    estado = dados.get("estado")
-    if not isinstance(estado, str) or not estado.strip():
+    novo_estado = dados.get("estado")
+    if not isinstance(novo_estado, str) or not novo_estado.strip():
         return jsonify({"erro": "O estado é obrigatório."}), 400
-
-    estado = estado.strip()
-    if estado not in ESTADOS_VALIDOS:
-        return jsonify(
-            {
-                "erro": (
-                    "Estado inválido. Use: Aberto, Em Análise ou Resolvido."
-                )
-            }
-        ), 400
 
     conexao = conectar_banco()
     try:
         registro = conexao.execute(
-            "SELECT estado FROM chamados WHERE id = ?",
+            """
+            SELECT id, titulo, descricao, localizacao, estado, morador_id
+            FROM chamados WHERE id = ?
+            """,
             (chamado_id,),
         ).fetchone()
 
         if registro is None:
             return jsonify({"erro": "Chamado não encontrado."}), 404
 
-        estado_atual = registro["estado"]
-        if estado not in TRANSICOES_PERMITIDAS.get(estado_atual, set()):
-            return jsonify(
-                {
-                    "erro": (
-                        f"Não é permitido alterar o estado de "
-                        f"'{estado_atual}' para '{estado}'."
-                    )
-                }
-            ), 400
+        chamado = Chamado(
+            id=registro["id"],
+            titulo=registro["titulo"],
+            descricao=registro["descricao"],
+            localizacao=registro["localizacao"],
+            morador_id=registro["morador_id"],
+            estado=EstadoChamado.converter(registro["estado"]),
+        )
+        try:
+            historico = chamado.transicionar_para(
+                novo_estado, g.usuario_atual
+            )
+        except SemPermissao as erro:
+            conexao.rollback()
+            return jsonify({"erro": str(erro)}), 403
+        except DadosInvalidos as erro:
+            conexao.rollback()
+            return jsonify({"erro": str(erro)}), 400
 
         cursor = conexao.execute(
             "UPDATE chamados SET estado = ? WHERE id = ?",
-            (estado, chamado_id),
+            (chamado.estado.value, chamado_id),
         )
         if cursor.rowcount == 0:
             return jsonify({"erro": "Chamado não encontrado."}), 404
@@ -247,15 +238,17 @@ def alterar_estado_chamado(chamado_id):
                 chamado_id,
                 estado_anterior,
                 estado_novo,
-                administrador_id
+                administrador_id,
+                data_hora
             )
-            VALUES (?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?)
             """,
             (
                 chamado_id,
-                estado_atual,
-                estado,
-                g.usuario_atual.id,
+                historico.estado_anterior.value,
+                historico.estado_novo.value,
+                historico.administrador_id,
+                historico.data_hora.isoformat(),
             ),
         )
 
@@ -273,7 +266,7 @@ def alterar_estado_chamado(chamado_id):
             "mensagem": "Estado do chamado atualizado com sucesso.",
             "chamado": {
                 "id": chamado_id,
-                "estado": estado,
+                "estado": chamado.estado.value,
             },
         }
     ), 200

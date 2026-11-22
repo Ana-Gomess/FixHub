@@ -7,3 +7,11 @@ class ErroDominio(Exception):
 
 class DadosInvalidos(ErroDominio):
     """Indica que os dados não atendem às regras do domínio."""
+
+
+class SemPermissao(ErroDominio):
+    """Indica que o perfil não pode executar a operação solicitada."""
+
+
+class TransicaoInvalida(DadosInvalidos):
+    """Indica uma mudança de estado não permitida para o chamado."""

@@ -9,3 +9,8 @@ paginas_bp = Blueprint("paginas", __name__)
 @paginas_bp.get("/cadastro")
 def pagina_cadastro():
     return render_template("cadastro.html")
+
+
+@paginas_bp.get("/login")
+def pagina_login():
+    return render_template("login.html")

@@ -15,7 +15,7 @@ def create_app(config: dict[str, Any] | None = None) -> Flask:
 
     ``config`` permite substituir as configurações padrão, por exemplo em
     outros ambientes. A persistência é conectada aos repositórios por esta
-    composição; as rotas ainda orquestram as operações até a task de serviços.
+    composição e serviços às rotas correspondentes.
     """
     from autenticacao import autenticacao_bp
     from rotas_chamados import chamados_bp
@@ -25,6 +25,7 @@ def create_app(config: dict[str, Any] | None = None) -> Flask:
     from fixhub.repositories.usuario_repositorio import UsuarioRepositorio
     from fixhub.services.autenticacao_servico import AutenticacaoServico
     from fixhub.services.chamado_servico import ChamadoServico
+    from fixhub.services.painel_chamados_servico import PainelChamadosServico
 
     backend_dir = Path(__file__).resolve().parents[1]
     app = Flask(__name__, static_folder=None)
@@ -59,6 +60,7 @@ def create_app(config: dict[str, Any] | None = None) -> Flask:
         historicos=historicos,
         autenticacao=AutenticacaoServico(usuarios),
         servico_chamados=ChamadoServico(chamados, historicos),
+        servico_painel_chamados=PainelChamadosServico(chamados),
     )
 
     app.register_blueprint(autenticacao_bp)

@@ -3,7 +3,6 @@ import sqlite3
 from flask import Blueprint, current_app, g, jsonify, request
 
 from fixhub.domain.errors import DadosInvalidos, RecursoNaoEncontrado, SemPermissao
-from fixhub.domain.estado_chamado import EstadoChamado
 from fixhub.domain.permissions import Permissao
 from permissoes import requer_login, requer_permissao
 
@@ -17,6 +16,10 @@ def _dependencias():
 
 def _servico_chamados():
     return _dependencias().servico_chamados
+
+
+def _servico_painel_chamados():
+    return _dependencias().servico_painel_chamados
 
 
 @chamados_bp.post("/chamados")
@@ -75,31 +78,16 @@ def detalhar_chamado(chamado_id: int):
 @chamados_bp.get("/admin/chamados")
 @requer_permissao(Permissao.LISTAR_TODOS_CHAMADOS)
 def listar_todos_chamados():
-    estado = request.args.get("estado")
-    if estado is not None:
-        try:
-            estado = EstadoChamado.converter(estado)
-        except DadosInvalidos as erro:
-            return jsonify(
-                {"erro": str(erro)}
-            ), 400
-
-    morador_id = request.args.get("morador_id")
-    if morador_id is not None:
-        try:
-            morador_id = int(morador_id)
-        except ValueError:
-            return jsonify(
-                {"erro": "O parâmetro morador_id deve ser um inteiro positivo."}
-            ), 400
-
-        if morador_id < 1:
-            return jsonify(
-                {"erro": "O parâmetro morador_id deve ser um inteiro positivo."}
-            ), 400
-
     try:
-        chamados = _dependencias().chamados.listar_todos(estado, morador_id)
+        chamados = _servico_painel_chamados().listar(
+            g.usuario_atual,
+            estado=request.args.get("estado"),
+            morador_id=request.args.get("morador_id"),
+        )
+    except DadosInvalidos as erro:
+        return jsonify({"erro": str(erro)}), 400
+    except SemPermissao as erro:
+        return jsonify({"erro": str(erro)}), 403
     except sqlite3.Error:
         return jsonify({"erro": "Não foi possível listar os chamados."}), 500
 
@@ -119,7 +107,9 @@ def listar_todos_chamados():
 @requer_permissao(Permissao.VER_CONTAGENS)
 def contar_chamados_por_estado():
     try:
-        contagens = _dependencias().chamados.contar_por_estado()
+        contagens = _servico_painel_chamados().contar_por_estado(g.usuario_atual)
+    except SemPermissao as erro:
+        return jsonify({"erro": str(erro)}), 403
     except sqlite3.Error:
         return jsonify({"erro": "Não foi possível contar os chamados."}), 500
 

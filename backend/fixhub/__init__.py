@@ -24,6 +24,7 @@ def create_app(config: dict[str, Any] | None = None) -> Flask:
     from fixhub.repositories.historico_repositorio import HistoricoRepositorio
     from fixhub.repositories.usuario_repositorio import UsuarioRepositorio
     from fixhub.services.autenticacao_servico import AutenticacaoServico
+    from fixhub.services.chamado_servico import ChamadoServico
 
     backend_dir = Path(__file__).resolve().parents[1]
     app = Flask(__name__, static_folder=None)
@@ -49,12 +50,15 @@ def create_app(config: dict[str, Any] | None = None) -> Flask:
     banco.inicializar()
 
     usuarios = UsuarioRepositorio(banco)
+    chamados = ChamadoRepositorio(banco)
+    historicos = HistoricoRepositorio(banco)
     app.extensions["fixhub"] = SimpleNamespace(
         database=banco,
         usuarios=usuarios,
-        chamados=ChamadoRepositorio(banco),
-        historicos=HistoricoRepositorio(banco),
+        chamados=chamados,
+        historicos=historicos,
         autenticacao=AutenticacaoServico(usuarios),
+        servico_chamados=ChamadoServico(chamados, historicos),
     )
 
     app.register_blueprint(autenticacao_bp)

@@ -11,8 +11,9 @@ As pastas `fixhub/domain`, `fixhub/infrastructure`, `fixhub/repositories`,
 `fixhub/services` e `fixhub/routes` organizam o sistema em camadas. A conexão,
 as transações e as consultas SQLite ficam em `infrastructure/database.py` e
 `repositories/`. As rotas de cadastro e login usam `AutenticacaoServico`; as
-rotas de chamados ainda chamam os repositórios diretamente e serão migradas nas
-próximas tasks.
+operações de criação, lista e detalhes dos chamados do morador usam
+`ChamadoServico`. O painel administrativo e a alteração de estado ainda chamam
+os repositórios diretamente; serão migrados nas próximas tasks.
 
 ## Iniciar o servidor
 
@@ -93,8 +94,9 @@ estados são representados por `EstadoChamado`, que concentra as transições
 permitidas: `Aberto` pode ir para `Em Análise` ou `Resolvido`; `Em Análise` pode
 ir para `Resolvido`; `Resolvido` é final. O método `transicionar_para` exige um
 administrador autorizado e retorna um `HistoricoEstado` imutável com os dados
-da mudança. As rotas usam os repositórios para consultar e salvar no SQLite; a
-orquestração dessas operações será migrada para serviços nas tasks seguintes.
+da mudança. O serviço do morador consulta e persiste chamados pelos repositórios.
+O painel e a alteração de estado ainda usam repositórios diretamente; essa
+orquestração será migrada nas tasks seguintes.
 
 ## Criar chamado
 
@@ -117,6 +119,10 @@ Exemplo de corpo:
 A rota `GET /chamados` exige perfil `morador` e retorna somente os chamados do
 usuário autenticado, incluindo o estado atual. Se ele ainda não tiver chamados,
 a resposta contém uma lista vazia.
+
+`GET /chamados/<id>` retorna os detalhes e o histórico se o chamado pertence ao
+morador autenticado. Um administrador também pode consultar os detalhes. Para
+outros usuários, a API responde `404`.
 
 ## Painel de chamados do administrador
 

@@ -29,7 +29,13 @@ def create_app(config: dict[str, Any] | None = None) -> Flask:
     from fixhub.services.usuario_servico import UsuarioServico
 
     backend_dir = Path(__file__).resolve().parents[1]
-    app = Flask(__name__, static_folder=None)
+    project_dir = backend_dir.parent
+    app = Flask(
+        __name__,
+        template_folder=str(project_dir / "frontend" / "templates"),
+        static_folder=str(project_dir / "frontend" / "static"),
+        static_url_path="/static",
+    )
     app.config.from_mapping(
         SECRET_KEY=os.environ.get("FLASK_SECRET_KEY"),
         DATABASE_PATH=os.environ.get(
@@ -65,8 +71,11 @@ def create_app(config: dict[str, Any] | None = None) -> Flask:
         servico_usuarios=UsuarioServico(usuarios),
     )
 
+    from fixhub.routes.paginas import paginas_bp
+
     app.register_blueprint(autenticacao_bp)
     app.register_blueprint(chamados_bp)
+    app.register_blueprint(paginas_bp)
     return app
 
 

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abrir chamado | FixHub</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chamado_novo.css') }}">
+</head>
+<body>
+    <header class="topbar">
+        <div class="marca" aria-label="FixHub">
+            <span class="marca-icone" aria-hidden="true">⌂</span>
+            <span>Fix<span>Hub</span></span>
+        </div>
+        <p>Condomínio bem cuidado, com tudo em um só lugar.</p>
+    </header>
+
+    <main class="pagina">
+        <section class="chamado-card" aria-labelledby="titulo-pagina">
+            <div class="logo" aria-hidden="true">
+                <span class="logo-icone">⌂</span>
+                <span class="logo-nome">Fix<span>Hub</span></span>
+            </div>
+
+            <div class="introducao">
+                <h1 id="titulo-pagina">Abrir chamado</h1>
+                <p>Conte o que precisa de manutenção e onde está acontecendo.</p>
+            </div>
+
+            <form id="formChamado">
+                <div class="campo">
+                    <label for="titulo">Título do chamado</label>
+                    <input
+                        type="text"
+                        id="titulo"
+                        name="titulo"
+                        placeholder="Ex.: Vazamento na cozinha"
+                        required
+                    >
+                </div>
+
+                <div class="campo">
+                    <label for="descricao">Descrição</label>
+                    <textarea
+                        id="descricao"
+                        name="descricao"
+                        placeholder="Descreva o problema ou serviço solicitado"
+                        rows="5"
+                        required
+                    ></textarea>
+                </div>
+
+                <div class="campo">
+                    <label for="localizacao">Localização</label>
+                    <input
+                        type="text"
+                        id="localizacao"
+                        name="localizacao"
+                        placeholder="Ex.: Apartamento 12, bloco B"
+                        required
+                    >
+                </div>
+
+                <button type="submit" id="botaoChamado">Enviar chamado</button>
+            </form>
+
+            <p class="aviso-sessao">
+                É necessário estar conectado como morador para registrar um chamado.
+                <a href="/login">Entrar</a>
+            </p>
+
+            <footer class="rodape">
+                <a href="/meus-chamados">Voltar para meus chamados</a>
+            </footer>
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/chamado_novo.js') }}"></script>
+</body>
+</html>

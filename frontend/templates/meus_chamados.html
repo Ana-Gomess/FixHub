@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus chamados | FixHub</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cadastro.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/meus_chamados.css') }}">
+</head>
+<body>
+    <header class="topbar">
+        <a href="/meus-chamados" class="marca">
+            <span class="marca-icone" aria-hidden="true">⌂</span>
+            <span>Fix<span>Hub</span></span>
+        </a>
+        <p>Condomínio bem cuidado, com tudo em um só lugar.</p>
+    </header>
+
+    <main class="pagina">
+        <section class="lista-card" aria-labelledby="titulo-pagina">
+            <div class="lista-cabecalho">
+                <div>
+                    <h1 id="titulo-pagina">Meus chamados</h1>
+                    <p>Acompanhe suas solicitações de manutenção.</p>
+                </div>
+                <a class="botao-novo" href="/chamados/novo">Abrir chamado</a>
+            </div>
+
+            <div id="listaChamados" class="lista-chamados" aria-live="polite">
+                <p class="estado-vazio">Carregando seus chamados...</p>
+            </div>
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/meus_chamados.js') }}"></script>
+</body>
+</html>

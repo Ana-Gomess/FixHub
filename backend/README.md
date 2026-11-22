@@ -1,5 +1,39 @@
 # Back-end do FixHub
 
+## Factory e pacote modular
+
+`app.py` importa `create_app` do pacote `fixhub`. A factory configura a chave de
+sessão, inicializa o banco existente e registra os blueprints de autenticação e
+chamados. Ela também aceita um dicionário de configurações para substituir os
+valores padrão.
+
+As pastas `fixhub/domain`, `fixhub/infrastructure`, `fixhub/repositories`,
+`fixhub/services` e `fixhub/routes` iniciam a organização em camadas. Nesta
+task, os módulos de domínio, banco e rotas ainda permanecem na raiz de
+`backend`; sua migração para os pacotes ocorrerá nas tasks seguintes.
+
+## Iniciar o servidor
+
+Execute os comandos no PowerShell, dentro da pasta `backend`. Crie e ative o
+ambiente virtual e instale as dependências na primeira execução:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+```
+
+Configure uma chave de sessão no mesmo terminal e inicie o servidor:
+
+```powershell
+$env:FLASK_SECRET_KEY = (python -c "import secrets; print(secrets.token_hex(32))")
+python app.py
+```
+
+Abra `http://127.0.0.1:5000`. Não publique nem versione o valor de
+`FLASK_SECRET_KEY`. Se fechar o terminal, gere outra chave ou reutilize uma
+guardada localmente.
+
 ## Instalar o Flask pelo terminal do VS Code
 
 1. Entre na pasta `backend`:

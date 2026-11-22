@@ -13,5 +13,9 @@ class SemPermissao(ErroDominio):
     """Indica que o perfil não pode executar a operação solicitada."""
 
 
+class RecursoNaoEncontrado(ErroDominio):
+    """Indica que o registro solicitado não existe mais."""
+
+
 class TransicaoInvalida(DadosInvalidos):
     """Indica uma mudança de estado não permitida para o chamado."""

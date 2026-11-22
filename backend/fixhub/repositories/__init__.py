@@ -1,1 +1,1 @@
-"""Repositórios de persistência do FixHub; preenchidos nas próximas tasks."""
+"""Acesso persistente de usuários, chamados e histórico."""

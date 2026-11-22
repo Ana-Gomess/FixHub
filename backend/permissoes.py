@@ -1,11 +1,9 @@
 
 from functools import wraps
 
-from flask import g, jsonify, session
+from flask import current_app, g, jsonify, session
 
-from database import conectar_banco
 from fixhub.domain.permissions import Permissao
-from fixhub.domain.usuario_factory import UsuarioFactory
 
 
 PERFIS_VALIDOS = frozenset({"morador", "administrador"})
@@ -20,25 +18,13 @@ def _carregar_usuario_logado():
         session.pop("usuario_id", None)
         return None
 
-    conexao = conectar_banco()
-    try:
-        registro = conexao.execute(
-            """
-            SELECT id, nome, email, senha_hash, perfil
-            FROM usuarios
-            WHERE id = ?
-            """,
-            (usuario_id,),
-        ).fetchone()
-    finally:
-        conexao.close()
-
-    if registro is None:
+    usuario = current_app.extensions["fixhub"].usuarios.buscar_por_id(usuario_id)
+    if usuario is None:
         # A conta pode ter sido removida depois da criação da sessão.
         session.pop("usuario_id", None)
         return None
 
-    g.usuario_atual = UsuarioFactory.a_partir_de(registro)
+    g.usuario_atual = usuario
     return g.usuario_atual
 
 

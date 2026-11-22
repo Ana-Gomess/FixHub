@@ -10,8 +10,9 @@ valores padrão.
 As pastas `fixhub/domain`, `fixhub/infrastructure`, `fixhub/repositories`,
 `fixhub/services` e `fixhub/routes` organizam o sistema em camadas. A conexão,
 as transações e as consultas SQLite ficam em `infrastructure/database.py` e
-`repositories/`. Os módulos HTTP ainda ficam na raiz de `backend` e chamam os
-repositórios; a migração das regras para serviços vem nas próximas tasks.
+`repositories/`. As rotas de cadastro e login usam `AutenticacaoServico`; as
+rotas de chamados ainda chamam os repositórios diretamente e serão migradas nas
+próximas tasks.
 
 ## Iniciar o servidor
 
@@ -34,6 +35,15 @@ python app.py
 Abra `http://127.0.0.1:5000`. Não publique nem versione o valor de
 `FLASK_SECRET_KEY`. Se fechar o terminal, gere outra chave ou reutilize uma
 guardada localmente.
+
+Para criar uma conta administrativa local, execute na pasta `backend`:
+
+```powershell
+python -m fixhub.cli criar-admin
+```
+
+O comando pede nome, e-mail e senha. A senha não fica no código; o administrador
+é salvo no SQLite local.
 
 ## Instalar o Flask pelo terminal do VS Code
 
@@ -73,6 +83,8 @@ de compatibilidade.
 O hash da senha fica encapsulado em `Usuario`, é usado por
 `verificar_senha` durante o login e não faz parte de `para_publico()`. O cadastro
 público instancia `Morador`; não é possível escolher o perfil de administrador.
+Cadastro e autenticação passam pelo serviço `AutenticacaoServico`. A rota
+`GET /sessao` devolve os dados públicos do usuário autenticado.
 
 ## Domínio de chamados
 

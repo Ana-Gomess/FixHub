@@ -1,1 +1,1 @@
-"""Serviços de aplicação do FixHub; preenchidos nas próximas tasks."""
+"""Casos de uso da aplicação FixHub."""

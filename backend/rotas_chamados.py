@@ -124,20 +124,10 @@ def alterar_estado_chamado(chamado_id):
     if not isinstance(dados, dict):
         return jsonify({"erro": "Envie o novo estado em formato JSON."}), 400
 
-    novo_estado = dados.get("estado")
-    if not isinstance(novo_estado, str) or not novo_estado.strip():
-        return jsonify({"erro": "O estado é obrigatório."}), 400
-
     try:
-        dependencias = _dependencias()
-        with dependencias.database.transacao() as conexao:
-            chamado = dependencias.chamados.buscar_por_id(chamado_id, conexao)
-            if chamado is None:
-                return jsonify({"erro": "Chamado não encontrado."}), 404
-
-            historico = chamado.transicionar_para(novo_estado, g.usuario_atual)
-            dependencias.chamados.atualizar_estado(chamado, conexao)
-            dependencias.historicos.salvar(historico, conexao)
+        chamado = _servico_chamados().alterar_estado(
+            g.usuario_atual, chamado_id, dados.get("estado")
+        )
     except SemPermissao as erro:
         return jsonify({"erro": str(erro)}), 403
     except DadosInvalidos as erro:

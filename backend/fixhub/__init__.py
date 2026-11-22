@@ -59,7 +59,7 @@ def create_app(config: dict[str, Any] | None = None) -> Flask:
         chamados=chamados,
         historicos=historicos,
         autenticacao=AutenticacaoServico(usuarios),
-        servico_chamados=ChamadoServico(chamados, historicos),
+        servico_chamados=ChamadoServico(banco, chamados, historicos),
         servico_painel_chamados=PainelChamadosServico(chamados),
     )
 

@@ -1,19 +1,27 @@
 from fixhub.domain.chamado import Chamado
-from fixhub.domain.errors import DadosInvalidos, RecursoNaoEncontrado, SemPermissao
+from fixhub.domain.estado_chamado import EstadoChamado
+from fixhub.domain.errors import (
+    DadosInvalidos,
+    RecursoNaoEncontrado,
+    SemPermissao,
+)
 from fixhub.domain.permissions import Permissao
 from fixhub.domain.usuario import Usuario
+from fixhub.infrastructure.database import Database
 from fixhub.repositories.chamado_repositorio import ChamadoRepositorio
 from fixhub.repositories.historico_repositorio import HistoricoRepositorio
 
 
 class ChamadoServico:
-    """Casos de uso de chamados acessíveis ao morador."""
+    """Casos de uso de chamados para moradores e administradores."""
 
     def __init__(
         self,
+        banco: Database,
         chamados: ChamadoRepositorio,
         historicos: HistoricoRepositorio,
     ):
+        self._banco = banco
         self._chamados = chamados
         self._historicos = historicos
 
@@ -65,3 +73,27 @@ class ChamadoServico:
                 for item in self._historicos.listar_por_chamado(chamado_id)
             ],
         }
+
+    def alterar_estado(
+        self, administrador: Usuario, chamado_id: int, novo_estado: object
+    ) -> Chamado:
+        if not administrador.tem_permissao(Permissao.ALTERAR_ESTADO):
+            raise SemPermissao("Somente um administrador pode alterar o estado.")
+        if not isinstance(chamado_id, int) or chamado_id < 1:
+            raise DadosInvalidos("O id do chamado deve ser positivo.")
+        if not isinstance(novo_estado, str) or not novo_estado.strip():
+            raise DadosInvalidos("O estado é obrigatório.")
+        if administrador.id is None:
+            raise DadosInvalidos("Salve o administrador antes de alterar o estado.")
+
+        destino = EstadoChamado.converter(novo_estado)
+        with self._banco.transacao() as conexao:
+            chamado = self._chamados.buscar_por_id(chamado_id, conexao)
+            if chamado is None:
+                raise RecursoNaoEncontrado("Chamado não encontrado.")
+
+            historico = chamado.transicionar_para(destino, administrador)
+            self._chamados.atualizar_estado(chamado, conexao)
+            self._historicos.salvar(historico, conexao)
+
+        return chamado

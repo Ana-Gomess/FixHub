@@ -1,18 +1,12 @@
 import re
 import sqlite3
 
-from flask import Blueprint, jsonify, request
-
-from database import conectar_banco
-from usuario import Usuario
-import re
-import sqlite3
-
 from flask import Blueprint, jsonify, request, session
-from werkzeug.security import check_password_hash
 
 from database import conectar_banco
-from usuario import Usuario
+from fixhub.domain.errors import DadosInvalidos
+from fixhub.domain.morador import Morador
+from fixhub.domain.usuario_factory import UsuarioFactory
 
 
 autenticacao_bp = Blueprint("autenticacao", __name__)
@@ -53,12 +47,10 @@ def cadastrar_usuario():
             {"erro": "Esse cadastro permite apenas o perfil morador."}
         ), 403
 
-    usuario = Usuario(
-        nome=nome,
-        email=email,
-        senha=senha,
-        perfil="morador",
-    )
+    try:
+        usuario = Morador.criar_com_senha(nome=nome, email=email, senha=senha)
+    except DadosInvalidos as erro:
+        return jsonify({"erro": str(erro)}), 400
 
     conexao = conectar_banco()
     try:
@@ -67,7 +59,12 @@ def cadastrar_usuario():
             INSERT INTO usuarios (nome, email, senha_hash, perfil)
             VALUES (?, ?, ?, ?)
             """,
-            (usuario.nome, usuario.email, usuario.senha_hash, usuario.perfil),
+            (
+                usuario.nome,
+                usuario.email,
+                usuario._hash_para_persistencia(),
+                usuario.perfil,
+            ),
         )
         conexao.commit()
         usuario_id = cursor.lastrowid
@@ -121,21 +118,20 @@ def fazer_login():
     finally:
         conexao.close()
 
-    if usuario is None or not check_password_hash(usuario["senha_hash"], senha):
+    if usuario is None:
+        return jsonify({"erro": "E-mail ou senha incorretos."}), 401
+
+    usuario = UsuarioFactory.a_partir_de(usuario)
+    if not usuario.verificar_senha(senha):
         return jsonify({"erro": "E-mail ou senha incorretos."}), 401
 
     session.clear()
-    session["usuario_id"] = usuario["id"]
+    session["usuario_id"] = usuario.id
 
     return jsonify(
         {
             "mensagem": "Login realizado com sucesso.",
-            "usuario": {
-                "id": usuario["id"],
-                "nome": usuario["nome"],
-                "email": usuario["email"],
-                "perfil": usuario["perfil"],
-            },
+            "usuario": usuario.para_publico(),
         }
     ), 200
 

@@ -1,1 +1,1 @@
-"""Modelos e regras do domínio FixHub; preenchido nas próximas tasks."""
+"""Modelos e regras centrais do domínio FixHub."""

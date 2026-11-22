@@ -22,6 +22,10 @@ def _servico_painel_chamados():
     return _dependencias().servico_painel_chamados
 
 
+def _servico_usuarios():
+    return _dependencias().servico_usuarios
+
+
 @chamados_bp.post("/chamados")
 @requer_permissao(Permissao.CRIAR_CHAMADO)
 def criar_chamado():
@@ -114,6 +118,19 @@ def contar_chamados_por_estado():
         return jsonify({"erro": "Não foi possível contar os chamados."}), 500
 
     return jsonify({"contagens": contagens}), 200
+
+
+@chamados_bp.get("/admin/moradores")
+@requer_permissao(Permissao.LISTAR_MORADORES)
+def listar_moradores():
+    try:
+        moradores = _servico_usuarios().listar_moradores(g.usuario_atual)
+    except SemPermissao as erro:
+        return jsonify({"erro": str(erro)}), 403
+    except sqlite3.Error:
+        return jsonify({"erro": "Não foi possível listar os moradores."}), 500
+
+    return jsonify({"moradores": moradores}), 200
 
 
 @chamados_bp.patch("/chamados/<int:chamado_id>/estado")

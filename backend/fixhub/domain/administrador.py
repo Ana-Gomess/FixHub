@@ -10,6 +10,7 @@ class Administrador(Usuario):
     def tem_permissao(self, permissao: Permissao) -> bool:
         return permissao in {
             Permissao.LISTAR_TODOS_CHAMADOS,
+            Permissao.LISTAR_MORADORES,
             Permissao.VER_CONTAGENS,
             Permissao.ALTERAR_ESTADO,
         }

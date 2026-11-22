@@ -128,12 +128,13 @@ outros usuários, a API responde `404`.
 
 `GET /admin/chamados` exige perfil `administrador` e retorna a lista geral de
 chamados com o nome do morador. Os filtros opcionais `estado` e `morador_id`
-podem ser usados juntos. Exemplos: `/admin/chamados?estado=Aberto` e
+podem ser usados juntos. `PainelChamadosServico` valida os filtros e consulta o
+repositório. Exemplos: `/admin/chamados?estado=Aberto` e
 `/admin/chamados?estado=Resolvido&morador_id=3`.
 
 `GET /admin/chamados/contagens` retorna a quantidade total de chamados em cada
 estado (`abertos`, `em_analise` e `resolvidos`) e também exige perfil
-`administrador`.
+`administrador`. A consulta é coordenada por `PainelChamadosServico`.
 
 ## Alterar estado do chamado
 

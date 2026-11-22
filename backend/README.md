@@ -73,6 +73,16 @@ O hash da senha fica encapsulado em `Usuario`, é usado por
 `verificar_senha` durante o login e não faz parte de `para_publico()`. O cadastro
 público instancia `Morador`; não é possível escolher o perfil de administrador.
 
+## Domínio de chamados
+
+`Chamado` valida título, descrição, localização e vínculo com o morador. Os
+estados são representados por `EstadoChamado`, que concentra as transições
+permitidas: `Aberto` pode ir para `Em Análise` ou `Resolvido`; `Em Análise` pode
+ir para `Resolvido`; `Resolvido` é final. O método `transicionar_para` exige um
+administrador autorizado e retorna um `HistoricoEstado` imutável com os dados
+da mudança. A rota continua persistindo esses dados diretamente no SQLite
+nesta etapa; a migração para serviços e repositórios é feita nas tasks seguintes.
+
 ## Criar chamado
 
 A rota `POST /chamados` exige uma sessão de morador e recebe JSON com `titulo`,

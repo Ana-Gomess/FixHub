@@ -42,11 +42,7 @@ formulario.addEventListener("submit", async (evento) => {
             );
         }
 
-        mostrarMensagem(
-            `Login realizado com sucesso. Olá, ${dados.usuario.nome}!`,
-            "sucesso"
-        );
-        formulario.reset();
+        window.location.assign("/meus-chamados");
     } catch (erro) {
         mostrarMensagem(
             erro.message || "Erro de conexão com o servidor.",

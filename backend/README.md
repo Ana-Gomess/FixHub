@@ -136,6 +136,9 @@ repositório. Exemplos: `/admin/chamados?estado=Aberto` e
 estado (`abertos`, `em_analise` e `resolvidos`) e também exige perfil
 `administrador`. A consulta é coordenada por `PainelChamadosServico`.
 
+`GET /admin/moradores` exige perfil `administrador` e retorna os moradores em
+ordem alfabética, com `id` e `nome`, para preencher o filtro do painel.
+
 ## Alterar estado do chamado
 
 A rota `PATCH /chamados/<id>/estado` exige perfil administrador e recebe o novo

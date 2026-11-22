@@ -26,6 +26,7 @@ def create_app(config: dict[str, Any] | None = None) -> Flask:
     from fixhub.services.autenticacao_servico import AutenticacaoServico
     from fixhub.services.chamado_servico import ChamadoServico
     from fixhub.services.painel_chamados_servico import PainelChamadosServico
+    from fixhub.services.usuario_servico import UsuarioServico
 
     backend_dir = Path(__file__).resolve().parents[1]
     app = Flask(__name__, static_folder=None)
@@ -61,6 +62,7 @@ def create_app(config: dict[str, Any] | None = None) -> Flask:
         autenticacao=AutenticacaoServico(usuarios),
         servico_chamados=ChamadoServico(banco, chamados, historicos),
         servico_painel_chamados=PainelChamadosServico(chamados),
+        servico_usuarios=UsuarioServico(usuarios),
     )
 
     app.register_blueprint(autenticacao_bp)

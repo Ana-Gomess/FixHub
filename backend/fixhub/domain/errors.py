@@ -9,6 +9,14 @@ class DadosInvalidos(ErroDominio):
     """Indica que os dados não atendem às regras do domínio."""
 
 
+class EmailDuplicado(ErroDominio):
+    """Indica que já existe uma conta usando o e-mail informado."""
+
+
+class CredenciaisInvalidas(ErroDominio):
+    """Indica que o e-mail ou a senha não correspondem a uma conta."""
+
+
 class SemPermissao(ErroDominio):
     """Indica que o perfil não pode executar a operação solicitada."""
 

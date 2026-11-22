@@ -18,7 +18,7 @@ def _carregar_usuario_logado():
         session.pop("usuario_id", None)
         return None
 
-    usuario = current_app.extensions["fixhub"].usuarios.buscar_por_id(usuario_id)
+    usuario = current_app.extensions["fixhub"].autenticacao.buscar_usuario(usuario_id)
     if usuario is None:
         # A conta pode ter sido removida depois da criação da sessão.
         session.pop("usuario_id", None)

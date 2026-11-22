@@ -107,7 +107,12 @@ class Chamado:
             administrador_id=administrador.id,
         )
 
-    def para_publico(self, *, incluir_morador_id: bool = False) -> dict:
+    def para_publico(
+        self,
+        *,
+        incluir_morador_id: bool = False,
+        incluir_morador_nome: bool = False,
+    ) -> dict:
         dados = {
             "id": self.id,
             "titulo": self.titulo,
@@ -117,4 +122,6 @@ class Chamado:
         }
         if incluir_morador_id:
             dados["morador_id"] = self.morador_id
+        if incluir_morador_nome and self.morador_nome is not None:
+            dados["morador_nome"] = self.morador_nome
         return dados

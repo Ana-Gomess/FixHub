@@ -3,14 +3,15 @@
 ## Factory e pacote modular
 
 `app.py` importa `create_app` do pacote `fixhub`. A factory configura a chave de
-sessão, inicializa o banco existente e registra os blueprints de autenticação e
-chamados. Ela também aceita um dicionário de configurações para substituir os
+sessão, inicializa o SQLite e compõe os repositórios que serão usados pelas
+rotas. Ela também aceita um dicionário de configurações para substituir os
 valores padrão.
 
 As pastas `fixhub/domain`, `fixhub/infrastructure`, `fixhub/repositories`,
-`fixhub/services` e `fixhub/routes` iniciam a organização em camadas. Nesta
-task, os módulos de domínio, banco e rotas ainda permanecem na raiz de
-`backend`; sua migração para os pacotes ocorrerá nas tasks seguintes.
+`fixhub/services` e `fixhub/routes` organizam o sistema em camadas. A conexão,
+as transações e as consultas SQLite ficam em `infrastructure/database.py` e
+`repositories/`. Os módulos HTTP ainda ficam na raiz de `backend` e chamam os
+repositórios; a migração das regras para serviços vem nas próximas tasks.
 
 ## Iniciar o servidor
 
@@ -66,8 +67,8 @@ def listar_chamados():
 ```
 
 `requer_permissao` responde `401` quando não há sessão válida e `403` quando o
-usuário não tem a permissão solicitada. `requer_perfil` continua disponível nas
-rotas antigas enquanto elas são migradas.
+usuário não tem a permissão solicitada. `requer_perfil` permanece como helper
+de compatibilidade.
 
 O hash da senha fica encapsulado em `Usuario`, é usado por
 `verificar_senha` durante o login e não faz parte de `para_publico()`. O cadastro
@@ -80,8 +81,8 @@ estados são representados por `EstadoChamado`, que concentra as transições
 permitidas: `Aberto` pode ir para `Em Análise` ou `Resolvido`; `Em Análise` pode
 ir para `Resolvido`; `Resolvido` é final. O método `transicionar_para` exige um
 administrador autorizado e retorna um `HistoricoEstado` imutável com os dados
-da mudança. A rota continua persistindo esses dados diretamente no SQLite
-nesta etapa; a migração para serviços e repositórios é feita nas tasks seguintes.
+da mudança. As rotas usam os repositórios para consultar e salvar no SQLite; a
+orquestração dessas operações será migrada para serviços nas tasks seguintes.
 
 ## Criar chamado
 

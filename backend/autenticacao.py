@@ -1,16 +1,18 @@
 import re
 import sqlite3
 
-from flask import Blueprint, jsonify, request, session
+from flask import Blueprint, current_app, jsonify, request, session
 
-from database import conectar_banco
 from fixhub.domain.errors import DadosInvalidos
 from fixhub.domain.morador import Morador
-from fixhub.domain.usuario_factory import UsuarioFactory
 
 
 autenticacao_bp = Blueprint("autenticacao", __name__)
 FORMATO_EMAIL = re.compile(r"[^@\s]+@[^@\s]+\.[^@\s]+")
+
+
+def _usuarios():
+    return current_app.extensions["fixhub"].usuarios
 
 
 @autenticacao_bp.post("/usuarios")
@@ -49,40 +51,18 @@ def cadastrar_usuario():
 
     try:
         usuario = Morador.criar_com_senha(nome=nome, email=email, senha=senha)
+        usuario = _usuarios().salvar(usuario)
     except DadosInvalidos as erro:
         return jsonify({"erro": str(erro)}), 400
-
-    conexao = conectar_banco()
-    try:
-        cursor = conexao.execute(
-            """
-            INSERT INTO usuarios (nome, email, senha_hash, perfil)
-            VALUES (?, ?, ?, ?)
-            """,
-            (
-                usuario.nome,
-                usuario.email,
-                usuario._hash_para_persistencia(),
-                usuario.perfil,
-            ),
-        )
-        conexao.commit()
-        usuario_id = cursor.lastrowid
     except sqlite3.IntegrityError:
-        conexao.rollback()
         return jsonify({"erro": "Este e-mail já está cadastrado."}), 409
-    finally:
-        conexao.close()
+    except sqlite3.Error:
+        return jsonify({"erro": "Não foi possível criar a conta."}), 500
 
     return jsonify(
         {
             "mensagem": "Cadastro realizado com sucesso.",
-            "usuario": {
-                "id": usuario_id,
-                "nome": usuario.nome,
-                "email": usuario.email,
-                "perfil": usuario.perfil,
-            },
+            "usuario": usuario.para_publico(),
         }
     ), 201
 
@@ -105,23 +85,14 @@ def fazer_login():
     if not email or not senha.strip():
         return jsonify({"erro": "E-mail e senha são obrigatórios."}), 400
 
-    conexao = conectar_banco()
     try:
-        usuario = conexao.execute(
-            """
-            SELECT id, nome, email, senha_hash, perfil
-            FROM usuarios
-            WHERE email = ?
-            """,
-            (email,),
-        ).fetchone()
-    finally:
-        conexao.close()
+        usuario = _usuarios().buscar_por_email(email)
+    except sqlite3.Error:
+        return jsonify({"erro": "Não foi possível consultar a conta."}), 500
 
     if usuario is None:
         return jsonify({"erro": "E-mail ou senha incorretos."}), 401
 
-    usuario = UsuarioFactory.a_partir_de(usuario)
     if not usuario.verificar_senha(senha):
         return jsonify({"erro": "E-mail ou senha incorretos."}), 401
 

@@ -1,1 +1,1 @@
-"""Integrações técnicas do FixHub, incluindo a persistência SQLite."""
+"""Conexão, transações e esquema SQLite do FixHub."""

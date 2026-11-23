@@ -14,3 +14,8 @@ def pagina_cadastro():
 @paginas_bp.get("/login")
 def pagina_login():
     return render_template("login.html")
+
+
+@paginas_bp.get("/chamados/novo")
+def pagina_novo_chamado():
+    return render_template("chamado_novo.html")

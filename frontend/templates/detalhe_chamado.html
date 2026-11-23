@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do chamado | FixHub</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/detalhe_chamado.css') }}">
+</head>
+<body>
+    <header class="topbar">
+        <a class="marca" href="/meus-chamados" aria-label="FixHub - Meus chamados">
+            <span class="marca-icone" aria-hidden="true">⌂</span>
+            <span>Fix<span>Hub</span></span>
+        </a>
+        <p>Condomínio bem cuidado, com tudo em um só lugar.</p>
+    </header>
+
+    <main class="pagina" id="detalheChamado" data-chamado-id="{{ chamado_id }}">
+        <a class="voltar-lista" href="/meus-chamados">← Voltar para meus chamados</a>
+
+        <div
+            id="estadoDetalhe"
+            class="estado-detalhe estado-detalhe--carregando"
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+        >
+            <span class="indicador-carregamento" aria-hidden="true"></span>
+            <p>Carregando os detalhes do chamado...</p>
+        </div>
+
+        <article id="conteudoDetalhe" class="detalhe-card" aria-labelledby="tituloChamado" hidden>
+            <header class="detalhe-cabecalho">
+                <p id="referenciaChamado" class="referencia-chamado"></p>
+                <h1 id="tituloChamado"></h1>
+                <span id="estadoChamado" class="chamado-estado"></span>
+            </header>
+
+            <section class="campo-detalhe" aria-labelledby="rotuloDescricao">
+                <h2 id="rotuloDescricao">Descrição do problema</h2>
+                <p id="descricaoChamado"></p>
+            </section>
+
+            <section class="campo-detalhe" aria-labelledby="rotuloLocalizacao">
+                <h2 id="rotuloLocalizacao">Localização</h2>
+                <p id="localizacaoChamado"></p>
+            </section>
+        </article>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/detalhe_chamado.js') }}" defer></script>
+</body>
+</html>

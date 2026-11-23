@@ -27,10 +27,23 @@ O cadastro público cria contas de morador por meio de `POST /usuarios`. O link
 `Entrar` na tela de cadastro abre a página de login. O backend não permite
 escolher o perfil de administrador durante o cadastro público.
 
-## Meus chamados
+## Task #22 — Lista “Meus chamados”
 
-A página `templates/meus_chamados.html` carrega os chamados de `GET /chamados`.
-O backend usa a sessão do morador para retornar somente os chamados dele. A tela
-exibe título, localização e estado atual, além de uma mensagem quando ainda não
-há chamados ou quando a API retorna um erro. O link `Abrir chamado` leva a
-`/chamados/novo`.
+A página está disponível em `/meus-chamados` e deve ser usada por um morador
+autenticado. Após o login de morador, o sistema abre essa lista. O botão `Abrir
+chamado` leva ao formulário em `/chamados/novo`.
+
+O JavaScript da página consulta `GET /chamados` usando a sessão Flask atual. A
+API verifica a permissão do usuário e retorna somente os chamados pertencentes
+ao morador autenticado. Cada item mostra título, localização, estado atual e
+identificador do chamado.
+
+A página apresenta uma mensagem quando a lista está vazia, quando o usuário não
+está autenticado (`401`) ou quando o perfil não tem acesso (`403`). Falhas de
+conexão ou da API exibem uma mensagem e permitem tentar carregar a lista
+novamente.
+
+Arquivos da funcionalidade: `templates/meus_chamados.html`,
+`static/js/meus_chamados.js` e `static/css/meus_chamados.css`. A rota HTML é
+definida em `backend/fixhub/routes/paginas.py`; a API da lista fica em
+`backend/rotas_chamados.py`.

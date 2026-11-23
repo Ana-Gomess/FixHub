@@ -1,5 +1,7 @@
 const estadoLista = document.getElementById("estadoLista");
 const listaChamados = document.getElementById("listaChamados");
+const estadoContagens = document.getElementById("estadoContagens");
+const cartoesContagem = document.getElementById("cartoesContagem");
 
 const estadosConhecidos = new Map([
     ["Aberto", "aberto"],
@@ -154,4 +156,91 @@ function criarLinkLogin() {
     return link;
 }
 
+function mostrarEstadoContagens(texto, tipo, tentarNovamente = false) {
+    estadoContagens.replaceChildren();
+    estadoContagens.className = `estado-lista estado-lista--${tipo}`;
+    estadoContagens.hidden = false;
+    cartoesContagem.hidden = true;
+
+    const mensagem = document.createElement("p");
+    mensagem.textContent = texto;
+    estadoContagens.appendChild(mensagem);
+
+    if (tipo === "carregando") {
+        const indicador = document.createElement("span");
+        indicador.className = "indicador-carregamento";
+        indicador.setAttribute("aria-hidden", "true");
+        estadoContagens.prepend(indicador);
+    }
+
+    if (tentarNovamente) {
+        const botao = document.createElement("button");
+        botao.className = "botao-tentar-novamente";
+        botao.type = "button";
+        botao.textContent = "Tentar novamente";
+        botao.addEventListener("click", carregarContagens);
+        estadoContagens.appendChild(botao);
+    }
+}
+
+async function carregarContagens() {
+    mostrarEstadoContagens("Carregando contagens...", "carregando");
+
+    try {
+        const resposta = await fetch("/admin/chamados/contagens", {
+            headers: { Accept: "application/json" },
+            credentials: "same-origin"
+        });
+        const dados = await resposta.json().catch(() => ({}));
+
+        if (resposta.status === 401) {
+            mostrarEstadoContagens(
+                "Entre na sua conta de administrador para ver as contagens.",
+                "erro"
+            );
+            estadoContagens.appendChild(criarLinkLogin());
+            return;
+        }
+
+        if (!resposta.ok) {
+            mostrarEstadoContagens(
+                dados.erro || "Não foi possível carregar as contagens.",
+                "erro",
+                resposta.status !== 403
+            );
+            return;
+        }
+
+        const contagens = dados.contagens;
+        const valores = [
+            contagens?.abertos,
+            contagens?.em_analise,
+            contagens?.resolvidos
+        ];
+        if (!valores.every((valor) => Number.isInteger(valor) && valor >= 0)) {
+            mostrarEstadoContagens(
+                "A resposta de contagens está inválida. Tente novamente.",
+                "erro",
+                true
+            );
+            return;
+        }
+
+        const formatador = new Intl.NumberFormat("pt-BR");
+        document.getElementById("contagemAbertos").textContent = formatador.format(contagens.abertos);
+        document.getElementById("contagemEmAnalise").textContent = formatador.format(contagens.em_analise);
+        document.getElementById("contagemResolvidos").textContent = formatador.format(contagens.resolvidos);
+
+        estadoContagens.hidden = true;
+        cartoesContagem.hidden = false;
+    } catch (erro) {
+        mostrarEstadoContagens(
+            "Não foi possível se comunicar com o servidor. Verifique sua conexão e tente novamente.",
+            "erro",
+            true
+        );
+    }
+}
+
+carregarContagens();
 carregarChamados();

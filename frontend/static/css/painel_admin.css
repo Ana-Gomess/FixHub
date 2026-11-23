@@ -6,6 +6,60 @@
     margin-bottom: 26px;
 }
 
+.secao-contagens {
+    margin-bottom: 34px;
+}
+
+.secao-contagens h2 {
+    margin-bottom: 14px;
+    color: #142b4d;
+    font-size: 17px;
+}
+
+.cartoes-contagem {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.cartoes-contagem[hidden] {
+    display: none;
+}
+
+.cartao-contagem {
+    min-height: 116px;
+    padding: 20px 22px;
+    border: 1px solid #dbe5f1;
+    border-left: 4px solid #0878f9;
+    border-radius: 16px;
+    background: white;
+    box-shadow: 0 8px 24px rgba(25, 65, 120, 0.07);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.cartao-contagem--analise {
+    border-left-color: #d97706;
+}
+
+.cartao-contagem--resolvidos {
+    border-left-color: #16a34a;
+}
+
+.rotulo-contagem {
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.cartao-contagem strong {
+    color: #142b4d;
+    font-size: 32px;
+    line-height: 1;
+}
+
 .descricao-topbar {
     max-width: min(42vw, 420px);
     overflow: hidden;
@@ -25,5 +79,13 @@
 @media (max-width: 600px) {
     .painel-card {
         padding: 28px 20px;
+    }
+
+    .cartoes-contagem {
+        grid-template-columns: 1fr;
+    }
+
+    .cartao-contagem {
+        min-height: 96px;
     }
 }

@@ -35,3 +35,12 @@ do morador em cada chamado. A lista apresenta título, descrição, localizaçã
 estado, além de identificar o morador responsável. A tela informa quando não há
 chamados e permite tentar novamente se ocorrer uma falha. Após o login, o perfil
 administrador é direcionado para esta página.
+
+## Task #31 — Cartões de contagem
+
+O painel administrativo consulta `GET /admin/chamados/contagens` e mostra os
+totais globais de chamados abertos, em análise e resolvidos. As contagens são
+independentes da lista de chamados e exigem uma sessão de administrador. A tela
+mostra estados de carregamento e erro e permite tentar carregar novamente.
+Os cartões ficam no template `templates/painel_admin.html`, são carregados por
+`static/js/painel_admin.js` e estilizados em `static/css/painel_admin.css`.

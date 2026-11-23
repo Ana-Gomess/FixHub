@@ -2,6 +2,11 @@ const estadoLista = document.getElementById("estadoLista");
 const listaChamados = document.getElementById("listaChamados");
 const estadoContagens = document.getElementById("estadoContagens");
 const cartoesContagem = document.getElementById("cartoesContagem");
+const formFiltros = document.getElementById("formFiltros");
+const filtroEstado = document.getElementById("filtroEstado");
+const filtroMorador = document.getElementById("filtroMorador");
+const estadoMoradores = document.getElementById("estadoMoradores");
+const botaoTentarMoradores = document.getElementById("botaoTentarMoradores");
 
 const estadosConhecidos = new Map([
     ["Aberto", "aberto"],
@@ -102,7 +107,11 @@ async function carregarChamados() {
     mostrarEstado("Carregando chamados...", "carregando");
 
     try {
-        const resposta = await fetch("/admin/chamados", {
+        const parametros = new URLSearchParams();
+        if (filtroEstado.value) parametros.set("estado", filtroEstado.value);
+        if (filtroMorador.value) parametros.set("morador_id", filtroMorador.value);
+        const query = parametros.toString();
+        const resposta = await fetch(`/admin/chamados${query ? `?${query}` : ""}`, {
             headers: { Accept: "application/json" },
             credentials: "same-origin"
         });
@@ -133,7 +142,13 @@ async function carregarChamados() {
         }
 
         if (dados.chamados.length === 0) {
-            mostrarEstado("Ainda não há chamados cadastrados.", "vazio");
+            const filtrosAtivos = Boolean(filtroEstado.value || filtroMorador.value);
+            mostrarEstado(
+                filtrosAtivos
+                    ? "Nenhum chamado corresponde aos filtros selecionados."
+                    : "Ainda não há chamados cadastrados.",
+                "vazio"
+            );
             return;
         }
 
@@ -145,6 +160,52 @@ async function carregarChamados() {
             "Não foi possível se comunicar com o servidor. Verifique sua conexão e tente novamente.",
             true
         );
+    }
+}
+
+function mostrarEstadoMoradores(texto = "", tipo = "") {
+    estadoMoradores.textContent = texto;
+    estadoMoradores.className = tipo ? `estado-moradores estado-moradores--${tipo}` : "estado-moradores";
+    estadoMoradores.hidden = !texto;
+}
+
+async function carregarMoradores() {
+    filtroMorador.disabled = true;
+    botaoTentarMoradores.hidden = true;
+    mostrarEstadoMoradores("Carregando moradores...", "carregando");
+
+    try {
+        const resposta = await fetch("/admin/moradores", {
+            headers: { Accept: "application/json" },
+            credentials: "same-origin"
+        });
+        const dados = await resposta.json().catch(() => ({}));
+
+        if (resposta.status === 401) {
+            mostrarEstadoMoradores("Entre como administrador para carregar os moradores.", "erro");
+            return;
+        }
+        if (resposta.status === 403) {
+            mostrarEstadoMoradores("Seu perfil não tem permissão para listar moradores.", "erro");
+            return;
+        }
+        if (!resposta.ok || !Array.isArray(dados.moradores)) {
+            mostrarEstadoMoradores(dados.erro || "Não foi possível carregar os moradores.", "erro");
+            botaoTentarMoradores.hidden = false;
+            return;
+        }
+
+        filtroMorador.replaceChildren(new Option("Todos os moradores", ""));
+        dados.moradores.forEach((morador) => {
+            if (morador && Number.isInteger(morador.id) && typeof morador.nome === "string") {
+                filtroMorador.add(new Option(morador.nome, String(morador.id)));
+            }
+        });
+        filtroMorador.disabled = false;
+        mostrarEstadoMoradores();
+    } catch (erro) {
+        mostrarEstadoMoradores("Não foi possível se comunicar com o servidor para carregar os moradores.", "erro");
+        botaoTentarMoradores.hidden = false;
     }
 }
 
@@ -242,5 +303,18 @@ async function carregarContagens() {
     }
 }
 
+formFiltros.addEventListener("submit", (evento) => {
+    evento.preventDefault();
+    carregarChamados();
+});
+
+document.getElementById("botaoLimparFiltros").addEventListener("click", () => {
+    formFiltros.reset();
+    carregarChamados();
+});
+
+botaoTentarMoradores.addEventListener("click", carregarMoradores);
+
+carregarMoradores();
 carregarContagens();
 carregarChamados();

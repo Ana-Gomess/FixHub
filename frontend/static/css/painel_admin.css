@@ -16,6 +16,130 @@
     font-size: 17px;
 }
 
+.ajuda-contagens {
+    margin: -6px 0 16px;
+    color: #64748b;
+    font-size: 13px;
+}
+
+.secao-filtros {
+    margin-bottom: 28px;
+    padding: 22px;
+    border: 1px solid #dbe5f1;
+    border-radius: 16px;
+    background: #f8fbff;
+}
+
+.cabecalho-filtros h2 {
+    margin: 0 0 6px;
+    color: #142b4d;
+    font-size: 17px;
+}
+
+.cabecalho-filtros p {
+    margin: 0 0 18px;
+    color: #64748b;
+    font-size: 14px;
+}
+
+.filtros-painel {
+    display: grid;
+    grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) auto auto;
+    align-items: end;
+    gap: 14px;
+}
+
+.campo-filtro {
+    display: grid;
+    gap: 7px;
+}
+
+.campo-filtro label {
+    color: #334155;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.campo-filtro select {
+    width: 100%;
+    min-height: 44px;
+    padding: 0 12px;
+    border: 1px solid #cbd8e8;
+    border-radius: 10px;
+    background: white;
+    color: #142b4d;
+    font: inherit;
+}
+
+.campo-filtro select:focus {
+    outline: 3px solid rgba(8, 120, 249, 0.18);
+    border-color: #0878f9;
+}
+
+.campo-filtro select:disabled {
+    background: #eef2f7;
+    color: #64748b;
+}
+
+.botao-aplicar-filtros,
+.botao-limpar-filtros,
+.botao-tentar-moradores {
+    min-height: 44px;
+    padding: 0 16px;
+    border-radius: 10px;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.botao-aplicar-filtros {
+    border: 1px solid #0878f9;
+    background: #0878f9;
+    color: white;
+}
+
+.botao-aplicar-filtros:hover {
+    background: #0668dc;
+}
+
+.botao-limpar-filtros,
+.botao-tentar-moradores {
+    border: 1px solid #cbd8e8;
+    background: white;
+    color: #142b4d;
+}
+
+.botao-limpar-filtros:hover,
+.botao-tentar-moradores:hover {
+    background: #eef5ff;
+}
+
+.estado-moradores {
+    margin-top: 12px;
+    color: #64748b;
+    font-size: 13px;
+}
+
+.estado-moradores--erro {
+    color: #b42318;
+}
+
+.botao-tentar-moradores {
+    min-height: 38px;
+    margin-top: 10px;
+    font-size: 13px;
+}
+
+.botao-tentar-moradores[hidden] {
+    display: none;
+}
+
+@media (max-width: 900px) {
+    .filtros-painel {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
 .cartoes-contagem {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -83,6 +207,19 @@
 
     .cartoes-contagem {
         grid-template-columns: 1fr;
+    }
+
+    .secao-filtros {
+        padding: 18px;
+    }
+
+    .filtros-painel {
+        grid-template-columns: 1fr;
+    }
+
+    .botao-aplicar-filtros,
+    .botao-limpar-filtros {
+        width: 100%;
     }
 
     .cartao-contagem {

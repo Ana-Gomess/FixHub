@@ -25,6 +25,34 @@
                 </div>
             </div>
 
+            <section class="secao-contagens" aria-labelledby="titulo-contagens">
+                <h2 id="titulo-contagens">Resumo dos chamados</h2>
+                <div
+                    id="estadoContagens"
+                    class="estado-lista estado-lista--carregando"
+                    role="status"
+                    aria-live="polite"
+                    aria-atomic="true"
+                >
+                    <span class="indicador-carregamento" aria-hidden="true"></span>
+                    <p>Carregando contagens...</p>
+                </div>
+                <div id="cartoesContagem" class="cartoes-contagem" hidden>
+                    <article class="cartao-contagem cartao-contagem--abertos">
+                        <span class="rotulo-contagem">Abertos</span>
+                        <strong id="contagemAbertos" aria-label="Chamados abertos">—</strong>
+                    </article>
+                    <article class="cartao-contagem cartao-contagem--analise">
+                        <span class="rotulo-contagem">Em análise</span>
+                        <strong id="contagemEmAnalise" aria-label="Chamados em análise">—</strong>
+                    </article>
+                    <article class="cartao-contagem cartao-contagem--resolvidos">
+                        <span class="rotulo-contagem">Resolvidos</span>
+                        <strong id="contagemResolvidos" aria-label="Chamados resolvidos">—</strong>
+                    </article>
+                </div>
+            </section>
+
             <div
                 id="estadoLista"
                 class="estado-lista estado-lista--carregando"

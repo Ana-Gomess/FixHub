@@ -126,6 +126,35 @@ body {
     line-height: 1.4;
 }
 
+.acoes-estado {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.botao-atualizar-estado {
+    min-height: 36px;
+    padding: 0 12px;
+    border: 1px solid #bfdbfe;
+    border-radius: 9px;
+    background: white;
+    color: #075bd6;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.botao-atualizar-estado:hover:not(:disabled) {
+    background: #eff6ff;
+}
+
+.botao-atualizar-estado:disabled {
+    color: #64748b;
+    cursor: wait;
+}
+
 .chamado-estado--aberto {
     color: #1d4ed8;
     background: #eff6ff;

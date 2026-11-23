@@ -42,7 +42,7 @@ formulario.addEventListener("submit", async (evento) => {
             );
         }
 
-        window.location.assign("/chamados/novo");
+        window.location.assign("/meus-chamados");
     } catch (erro) {
         mostrarMensagem(
             erro.message || "Erro de conexão com o servidor.",

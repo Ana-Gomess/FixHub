@@ -19,3 +19,8 @@ def pagina_login():
 @paginas_bp.get("/chamados/novo")
 def pagina_novo_chamado():
     return render_template("chamado_novo.html")
+
+
+@paginas_bp.get("/meus-chamados")
+def pagina_meus_chamados():
+    return render_template("meus_chamados.html")

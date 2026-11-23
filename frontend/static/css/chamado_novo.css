@@ -110,6 +110,31 @@ body {
     line-height: 1.6;
 }
 
+.mensagem {
+    margin: -6px 0 22px;
+    padding: 14px 16px;
+    border: 1px solid transparent;
+    border-radius: 11px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.mensagem[hidden] {
+    display: none;
+}
+
+.mensagem--sucesso {
+    color: #166534;
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+}
+
+.mensagem--erro {
+    color: #b91c1c;
+    background: #fef2f2;
+    border-color: #fecaca;
+}
+
 .campo {
     margin-bottom: 20px;
 }
@@ -150,6 +175,11 @@ body {
 .campo textarea:focus {
     border-color: var(--azul);
     box-shadow: 0 0 0 3px rgba(8, 120, 249, 0.12);
+}
+
+.campo input[aria-invalid="true"],
+.campo textarea[aria-invalid="true"] {
+    border-color: #dc2626;
 }
 
 .campo input::placeholder,

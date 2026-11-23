@@ -27,7 +27,16 @@
                 <p>Conte o que precisa de manutenção e onde está acontecendo.</p>
             </div>
 
-            <form id="formChamado">
+            <div
+                id="mensagemChamado"
+                class="mensagem"
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
+                hidden
+            ></div>
+
+            <form id="formChamado" novalidate>
                 <div class="campo">
                     <label for="titulo">Título do chamado</label>
                     <input

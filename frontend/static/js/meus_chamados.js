@@ -9,6 +9,23 @@ function criarLink(href, texto) {
     return link;
 }
 
+const estadosConhecidos = new Map([
+    ["Aberto", "aberto"],
+    ["Em Análise", "em-analise"],
+    ["Resolvido", "resolvido"]
+]);
+
+function criarIndicadorEstado(estado) {
+    const indicador = document.createElement("span");
+    const classe = estadosConhecidos.get(estado);
+    const texto = classe ? estado : "Estado não disponível";
+
+    indicador.className = `chamado-estado chamado-estado--${classe || "indisponivel"}`;
+    indicador.textContent = texto;
+    indicador.setAttribute("aria-label", `Estado: ${texto}`);
+    return indicador;
+}
+
 function mostrarEstado(texto, tipo) {
     estadoLista.replaceChildren();
     estadoLista.className = `estado-lista estado-lista--${tipo}`;
@@ -64,7 +81,8 @@ function criarItemChamado(chamado) {
     descricao.className = "chamado-descricao";
     descricao.textContent = chamado.descricao;
 
-    cartao.append(referencia, titulo, localizacao, descricao);
+    const indicadorEstado = criarIndicadorEstado(chamado.estado);
+    cartao.append(referencia, titulo, indicadorEstado, localizacao, descricao);
     item.append(cartao);
     return item;
 }

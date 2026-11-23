@@ -283,3 +283,41 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
+.chamado-estado {
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    width: fit-content;
+    margin-bottom: 12px;
+    padding: 5px 11px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.chamado-estado--aberto {
+    color: #1d4ed8;
+    background: #eff6ff;
+    border-color: #bfdbfe;
+}
+
+.chamado-estado--em-analise {
+    color: #92400e;
+    background: #fffbeb;
+    border-color: #fde68a;
+}
+
+.chamado-estado--resolvido {
+    color: #166534;
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+}
+
+.chamado-estado--indisponivel {
+    color: #475569;
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+}

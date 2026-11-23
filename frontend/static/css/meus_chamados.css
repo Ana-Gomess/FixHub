@@ -321,3 +321,14 @@ body {
     background: #f1f5f9;
     border-color: #cbd5e1;
 }
+.chamado-titulo-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.chamado-titulo-link:hover,
+.chamado-titulo-link:focus-visible {
+    color: var(--azul);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}

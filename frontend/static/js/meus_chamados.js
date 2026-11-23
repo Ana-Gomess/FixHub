@@ -71,7 +71,11 @@ function criarItemChamado(chamado) {
 
     const titulo = document.createElement("h2");
     titulo.className = "chamado-titulo";
-    titulo.textContent = chamado.titulo;
+    const linkTitulo = document.createElement("a");
+    linkTitulo.className = "chamado-titulo-link";
+    linkTitulo.href = `/chamados/${encodeURIComponent(chamado.id)}/detalhes`;
+    linkTitulo.textContent = chamado.titulo;
+    titulo.append(linkTitulo);
 
     const localizacao = document.createElement("p");
     localizacao.className = "chamado-localizacao";

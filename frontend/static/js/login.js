@@ -42,7 +42,10 @@ formulario.addEventListener("submit", async (evento) => {
             );
         }
 
-        window.location.assign("/meus-chamados");
+        const destino = dados.usuario?.perfil === "administrador"
+            ? "/painel-admin"
+            : "/meus-chamados";
+        window.location.assign(destino);
     } catch (erro) {
         mostrarMensagem(
             erro.message || "Erro de conexão com o servidor.",

@@ -1,0 +1,29 @@
+.painel-card {
+    max-width: 1120px;
+}
+
+.painel-card .cabecalho-lista {
+    margin-bottom: 26px;
+}
+
+.descricao-topbar {
+    max-width: min(42vw, 420px);
+    overflow: hidden;
+    text-align: right;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.chamado-responsavel {
+    margin-top: 14px;
+    color: #334155;
+    font-size: 13px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 600px) {
+    .painel-card {
+        padding: 28px 20px;
+    }
+}

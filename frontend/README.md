@@ -8,6 +8,7 @@ Com o servidor ativo, abra:
 
 - Cadastro: `http://127.0.0.1:5000/cadastro`
 - Login: `http://127.0.0.1:5000/login`
+- Meus chamados: `http://127.0.0.1:5000/meus-chamados` (morador autenticado)
 
 ## Login
 
@@ -25,3 +26,11 @@ compartilhado do cadastro, e o comportamento do formulário fica em
 O cadastro público cria contas de morador por meio de `POST /usuarios`. O link
 `Entrar` na tela de cadastro abre a página de login. O backend não permite
 escolher o perfil de administrador durante o cadastro público.
+
+## Meus chamados
+
+A página `templates/meus_chamados.html` carrega os chamados de `GET /chamados`.
+O backend usa a sessão do morador para retornar somente os chamados dele. A tela
+exibe título, localização e estado atual, além de uma mensagem quando ainda não
+há chamados ou quando a API retorna um erro. O link `Abrir chamado` leva a
+`/chamados/novo`.

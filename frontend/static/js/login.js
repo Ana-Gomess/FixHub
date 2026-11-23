@@ -42,10 +42,23 @@ formulario.addEventListener("submit", async (evento) => {
             );
         }
 
-        mostrarMensagem(
-            `Login realizado com sucesso. Olá, ${dados.usuario.nome}!`,
-            "sucesso"
-        );
+        const usuario = dados.usuario;
+
+        if (usuario.perfil === "morador") {
+            mostrarMensagem(
+                `Login realizado com sucesso. Olá, ${usuario.nome}! Redirecionando...`,
+                "sucesso"
+            );
+            window.setTimeout(() => {
+                window.location.assign("/meus-chamados");
+            }, 900);
+        } else {
+            mostrarMensagem(
+                `Login realizado com sucesso. Olá, ${usuario.nome}!`,
+                "sucesso"
+            );
+        }
+
         formulario.reset();
     } catch (erro) {
         mostrarMensagem(

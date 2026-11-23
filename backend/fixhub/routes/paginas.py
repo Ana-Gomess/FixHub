@@ -25,6 +25,12 @@ def pagina_novo_chamado():
 def pagina_meus_chamados():
     return render_template("meus_chamados.html")
 
+
+@paginas_bp.get("/painel-admin")
+def pagina_painel_admin():
+    return render_template("painel_admin.html")
+
+
 @paginas_bp.get("/chamados/<int:chamado_id>/detalhes")
 def pagina_detalhe_chamado(chamado_id: int):
     return render_template("detalhe_chamado.html", chamado_id=chamado_id)

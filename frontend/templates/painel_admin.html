@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel administrativo | FixHub</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/meus_chamados.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/painel_admin.css') }}">
+</head>
+<body>
+    <header class="topbar">
+        <a class="marca" href="/painel-admin" aria-label="FixHub - Painel administrativo">
+            <span class="marca-icone" aria-hidden="true">⌂</span>
+            <span>Fix<span>Hub</span></span>
+        </a>
+        <p class="descricao-topbar">Condomínio bem cuidado, com tudo em um só lugar.</p>
+    </header>
+
+    <main class="pagina">
+        <section class="lista-card painel-card" aria-labelledby="titulo-pagina">
+            <div class="cabecalho-lista">
+                <div class="introducao">
+                    <h1 id="titulo-pagina">Chamados do condomínio</h1>
+                    <p>Visão geral das solicitações de manutenção dos moradores.</p>
+                </div>
+            </div>
+
+            <div
+                id="estadoLista"
+                class="estado-lista estado-lista--carregando"
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
+            >
+                <span class="indicador-carregamento" aria-hidden="true"></span>
+                <p>Carregando chamados...</p>
+            </div>
+
+            <ul
+                id="listaChamados"
+                class="lista-chamados"
+                aria-label="Chamados de todos os moradores"
+                hidden
+            ></ul>
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/painel_admin.js') }}"></script>
+</body>
+</html>

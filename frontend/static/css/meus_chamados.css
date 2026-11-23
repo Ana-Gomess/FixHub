@@ -82,6 +82,13 @@ body {
     margin-bottom: 30px;
 }
 
+.acoes-lista {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 10px;
+}
+
 .introducao h1 {
     margin-bottom: 9px;
     font-size: 28px;
@@ -112,6 +119,28 @@ body {
 .botao-novo:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(8, 120, 249, 0.25);
+}
+
+.botao-atualizar {
+    min-height: 48px;
+    padding: 0 16px;
+    border: 1px solid #bfdbfe;
+    border-radius: 11px;
+    background: white;
+    color: #075bd6;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.botao-atualizar:hover:not(:disabled) {
+    background: #eff6ff;
+}
+
+.botao-atualizar:disabled {
+    color: #64748b;
+    cursor: wait;
 }
 
 .estado-lista {
@@ -276,6 +305,16 @@ body {
     }
 
     .botao-novo {
+        width: 100%;
+    }
+
+    .acoes-lista {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .botao-atualizar {
         width: 100%;
     }
 

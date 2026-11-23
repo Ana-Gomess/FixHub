@@ -1,5 +1,6 @@
 const estadoLista = document.getElementById("estadoLista");
 const listaChamados = document.getElementById("listaChamados");
+const botaoAtualizarLista = document.getElementById("botaoAtualizarLista");
 
 function criarLink(href, texto) {
     const link = document.createElement("a");
@@ -92,6 +93,8 @@ function criarItemChamado(chamado) {
 }
 
 async function carregarChamados() {
+    botaoAtualizarLista.disabled = true;
+    botaoAtualizarLista.textContent = "Atualizando...";
     listaChamados.hidden = true;
     listaChamados.replaceChildren();
     mostrarEstado("Carregando seus chamados...", "carregando");
@@ -99,7 +102,8 @@ async function carregarChamados() {
     try {
         const resposta = await fetch("/chamados", {
             credentials: "same-origin",
-            headers: { Accept: "application/json" }
+            headers: { Accept: "application/json" },
+            cache: "no-store"
         });
         const dados = await resposta.json().catch(() => ({}));
 
@@ -146,7 +150,11 @@ async function carregarChamados() {
             "Não foi possível se comunicar com o servidor. Verifique sua conexão e tente novamente.",
             { tentarNovamente: true }
         );
+    } finally {
+        botaoAtualizarLista.disabled = false;
+        botaoAtualizarLista.textContent = "Atualizar chamados";
     }
 }
 
+botaoAtualizarLista.addEventListener("click", carregarChamados);
 carregarChamados();

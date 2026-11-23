@@ -1,6 +1,7 @@
 const paginaDetalhe = document.getElementById("detalheChamado");
 const estadoDetalhe = document.getElementById("estadoDetalhe");
 const conteudoDetalhe = document.getElementById("conteudoDetalhe");
+const botaoAtualizarDetalhe = document.getElementById("botaoAtualizarDetalhe");
 const estadosConhecidos = new Map([
     ["Aberto", "aberto"],
     ["Em Análise", "em-analise"],
@@ -74,13 +75,16 @@ function preencherDetalhe(chamado) {
 }
 
 async function carregarDetalhe() {
+    botaoAtualizarDetalhe.disabled = true;
+    botaoAtualizarDetalhe.textContent = "Atualizando...";
     mostrarEstado("Carregando os detalhes do chamado...", "carregando");
     const chamadoId = paginaDetalhe.dataset.chamadoId;
 
     try {
         const resposta = await fetch(`/chamados/${encodeURIComponent(chamadoId)}`, {
             credentials: "same-origin",
-            headers: { Accept: "application/json" }
+            headers: { Accept: "application/json" },
+            cache: "no-store"
         });
         const dados = await resposta.json().catch(() => ({}));
 
@@ -115,7 +119,11 @@ async function carregarDetalhe() {
             "Não foi possível se comunicar com o servidor. Verifique sua conexão e tente novamente.",
             { tentarNovamente: true }
         );
+    } finally {
+        botaoAtualizarDetalhe.disabled = false;
+        botaoAtualizarDetalhe.textContent = "Atualizar estado";
     }
 }
 
+botaoAtualizarDetalhe.addEventListener("click", carregarDetalhe);
 carregarDetalhe();

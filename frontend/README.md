@@ -61,3 +61,10 @@ Cada chamado do painel oferece apenas as transições de estado permitidas:
 Chamados resolvidos não oferecem novas transições. A alteração é enviada para
 `PATCH /chamados/<id>/estado`; após o sucesso, a lista e os cartões de contagem
 são atualizados.
+
+## Task #39 — Estado atualizado para o morador
+
+A lista `/meus-chamados` e os detalhes consultam novamente o estado atual do
+chamado na API. Os botões **Atualizar chamados** e **Atualizar estado** buscam
+os dados mais recentes sem usar o cache do navegador, para o morador conferir
+uma alteração feita pelo administrador sem sair da tela.

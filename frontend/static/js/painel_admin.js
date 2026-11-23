@@ -2,6 +2,7 @@ const estadoLista = document.getElementById("estadoLista");
 const listaChamados = document.getElementById("listaChamados");
 const estadoContagens = document.getElementById("estadoContagens");
 const cartoesContagem = document.getElementById("cartoesContagem");
+const estadoAtualizacao = document.getElementById("estadoAtualizacao");
 const formFiltros = document.getElementById("formFiltros");
 const filtroEstado = document.getElementById("filtroEstado");
 const filtroMorador = document.getElementById("filtroMorador");
@@ -12,6 +13,12 @@ const estadosConhecidos = new Map([
     ["Aberto", "aberto"],
     ["Em Análise", "em-analise"],
     ["Resolvido", "resolvido"]
+]);
+
+const proximosEstados = new Map([
+    ["Aberto", ["Em Análise", "Resolvido"]],
+    ["Em Análise", ["Resolvido"]],
+    ["Resolvido", []]
 ]);
 
 function mostrarEstado(texto, tipo) {
@@ -97,8 +104,111 @@ function criarItemChamado(chamado) {
     descricao.textContent = chamado.descricao || "Descrição não informada.";
 
     cartao.append(localizacao, descricao);
+    cartao.appendChild(criarControlesEstado(chamado));
     item.appendChild(cartao);
     return item;
+}
+
+function criarControlesEstado(chamado) {
+    const formulario = document.createElement("form");
+    formulario.className = "controles-estado";
+
+    const rotulo = document.createElement("label");
+    rotulo.className = "rotulo-seletor-estado";
+    rotulo.htmlFor = `novo-estado-${chamado.id}`;
+    rotulo.textContent = "Alterar estado";
+
+    const seletor = document.createElement("select");
+    seletor.id = `novo-estado-${chamado.id}`;
+    seletor.name = "estado";
+    seletor.className = "seletor-estado-chamado";
+    seletor.required = true;
+
+    const estadosPermitidos = proximosEstados.get(chamado.estado) || [];
+    const opcaoInicial = document.createElement("option");
+    opcaoInicial.value = "";
+    opcaoInicial.textContent = estadosPermitidos.length
+        ? "Selecione o novo estado"
+        : "Sem novas transições";
+    seletor.appendChild(opcaoInicial);
+
+    estadosPermitidos.forEach((estado) => {
+        const opcao = document.createElement("option");
+        opcao.value = estado;
+        opcao.textContent = estado;
+        seletor.appendChild(opcao);
+    });
+
+    const botao = document.createElement("button");
+    botao.className = "botao-salvar-estado";
+    botao.type = "submit";
+    botao.textContent = "Salvar estado";
+    botao.disabled = estadosPermitidos.length === 0;
+
+    const feedback = document.createElement("p");
+    feedback.className = "feedback-estado-chamado";
+    feedback.setAttribute("role", "status");
+    feedback.setAttribute("aria-live", "polite");
+
+    seletor.addEventListener("change", () => {
+        botao.disabled = !seletor.value;
+    });
+    formulario.addEventListener("submit", (evento) => {
+        evento.preventDefault();
+        if (seletor.value) atualizarEstadoChamado(chamado.id, seletor.value, formulario);
+    });
+
+    formulario.append(rotulo, seletor, botao, feedback);
+    return formulario;
+}
+
+function mostrarEstadoAtualizacao(texto, tipo = "sucesso") {
+    estadoAtualizacao.textContent = texto;
+    estadoAtualizacao.className = `estado-atualizacao estado-atualizacao--${tipo}`;
+    estadoAtualizacao.hidden = !texto;
+}
+
+async function atualizarEstadoChamado(chamadoId, novoEstado, formulario) {
+    const seletor = formulario.elements.estado;
+    const botao = formulario.querySelector("button[type='submit']");
+    const feedback = formulario.querySelector(".feedback-estado-chamado");
+    botao.disabled = true;
+    seletor.disabled = true;
+    feedback.textContent = "Salvando alteração...";
+    feedback.className = "feedback-estado-chamado";
+
+    try {
+        const resposta = await fetch(`/chamados/${chamadoId}/estado`, {
+            method: "PATCH",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json"
+            },
+            credentials: "same-origin",
+            body: JSON.stringify({ estado: novoEstado })
+        });
+        const dados = await resposta.json().catch(() => ({}));
+
+        if (!resposta.ok) {
+            const mensagem = resposta.status === 401
+                ? "Sua sessão expirou. Entre novamente para alterar o estado."
+                : resposta.status === 403
+                    ? "Seu perfil não tem permissão para alterar estados."
+                    : dados.erro || "Não foi possível alterar o estado do chamado.";
+            feedback.textContent = mensagem;
+            feedback.classList.add("feedback-estado-chamado--erro");
+            return;
+        }
+
+        mostrarEstadoAtualizacao(dados.mensagem || "Estado atualizado com sucesso.");
+        await Promise.all([carregarChamados(), carregarContagens()]);
+    } catch (erro) {
+        feedback.textContent = "Não foi possível se comunicar com o servidor. Tente novamente.";
+        feedback.classList.add("feedback-estado-chamado--erro");
+    } finally {
+        seletor.disabled = false;
+        botao.disabled = !seletor.value;
+    }
 }
 
 async function carregarChamados() {

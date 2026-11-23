@@ -53,3 +53,11 @@ dois critérios ao mesmo tempo. A lista usa os parâmetros `estado` e
 `GET /admin/moradores`. O botão para limpar filtros retorna à lista completa.
 Os cartões da Task #31 continuam exibindo as contagens gerais, sem aplicar os
 filtros da lista.
+
+## Task #38 — Seletor de estado no painel administrativo
+
+Cada chamado do painel oferece apenas as transições de estado permitidas:
+`Aberto` para `Em Análise` ou `Resolvido`, e `Em Análise` para `Resolvido`.
+Chamados resolvidos não oferecem novas transições. A alteração é enviada para
+`PATCH /chamados/<id>/estado`; após o sucesso, a lista e os cartões de contagem
+são atualizados.

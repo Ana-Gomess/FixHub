@@ -44,3 +44,12 @@ independentes da lista de chamados e exigem uma sessão de administrador. A tela
 mostra estados de carregamento e erro e permite tentar carregar novamente.
 Os cartões ficam no template `templates/painel_admin.html`, são carregados por
 `static/js/painel_admin.js` e estilizados em `static/css/painel_admin.css`.
+
+## Task #32 — Filtros do painel administrativo
+
+O painel permite filtrar a lista de chamados por estado, por morador ou pelos
+dois critérios ao mesmo tempo. A lista usa os parâmetros `estado` e
+`morador_id` de `GET /admin/chamados`; as opções de moradores são carregadas de
+`GET /admin/moradores`. O botão para limpar filtros retorna à lista completa.
+Os cartões da Task #31 continuam exibindo as contagens gerais, sem aplicar os
+filtros da lista.

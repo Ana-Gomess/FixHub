@@ -27,6 +27,7 @@
 
             <section class="secao-contagens" aria-labelledby="titulo-contagens">
                 <h2 id="titulo-contagens">Resumo dos chamados</h2>
+                <p class="ajuda-contagens">Os totais são gerais e não mudam com os filtros da lista.</p>
                 <div
                     id="estadoContagens"
                     class="estado-lista estado-lista--carregando"
@@ -51,6 +52,42 @@
                         <strong id="contagemResolvidos" aria-label="Chamados resolvidos">—</strong>
                     </article>
                 </div>
+            </section>
+
+            <section class="secao-filtros" aria-labelledby="titulo-filtros">
+                <div class="cabecalho-filtros">
+                    <h2 id="titulo-filtros">Filtrar chamados</h2>
+                    <p>Combine o estado e o morador para refinar a lista.</p>
+                </div>
+
+                <form id="formFiltros" class="filtros-painel">
+                    <div class="campo-filtro">
+                        <label for="filtroEstado">Estado</label>
+                        <select id="filtroEstado" name="estado">
+                            <option value="">Todos os estados</option>
+                            <option value="Aberto">Aberto</option>
+                            <option value="Em Análise">Em análise</option>
+                            <option value="Resolvido">Resolvido</option>
+                        </select>
+                    </div>
+
+                    <div class="campo-filtro">
+                        <label for="filtroMorador">Morador</label>
+                        <select id="filtroMorador" name="morador_id" disabled>
+                            <option value="">Todos os moradores</option>
+                        </select>
+                    </div>
+
+                    <button class="botao-aplicar-filtros" type="submit">Aplicar filtros</button>
+                    <button class="botao-limpar-filtros" id="botaoLimparFiltros" type="button">
+                        Limpar
+                    </button>
+                </form>
+
+                <div class="estado-moradores" id="estadoMoradores" role="status" aria-live="polite" hidden></div>
+                <button class="botao-tentar-moradores" id="botaoTentarMoradores" type="button" hidden>
+                    Tentar carregar moradores novamente
+                </button>
             </section>
 
             <div

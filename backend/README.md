@@ -2,18 +2,29 @@
 
 ## Factory e pacote modular
 
-`app.py` importa `create_app` do pacote `fixhub`. A factory configura a chave de
-sessão, inicializa o SQLite e compõe os repositórios que serão usados pelas
+`app.py` importa `create_app` de `app_factory.py`. A factory configura a chave
+de sessão, inicializa o SQLite e compõe os repositórios e serviços usados pelas
 rotas. Ela também aceita um dicionário de configurações para substituir os
 valores padrão.
 
-As pastas `fixhub/domain`, `fixhub/infrastructure`, `fixhub/repositories`,
-`fixhub/services` e `fixhub/routes` organizam o sistema em camadas. A conexão,
+As pastas `domain`, `infrastructure`, `repositories`, `services` e `routes`
+ficam diretamente em `backend/` e organizam o sistema em camadas. A conexão,
 as transações e as consultas SQLite ficam em `infrastructure/database.py` e
-`repositories/`. As rotas de cadastro e login usam `AutenticacaoServico`; as
-operações de criação, lista e detalhes dos chamados do morador usam
-`ChamadoServico`. O painel administrativo e a alteração de estado ainda chamam
-os repositórios diretamente; serão migrados nas próximas tasks.
+`repositories/`. Cadastro e login usam `AutenticacaoServico`; operações de
+chamados usam `ChamadoServico` e consultas do painel usam
+`PainelChamadosServico`.
+
+```text
+backend/
+  app.py
+  app_factory.py
+  cli.py
+  domain/
+  infrastructure/
+  repositories/
+  routes/
+  services/
+```
 
 ## Iniciar o servidor
 
@@ -40,7 +51,7 @@ guardada localmente.
 Para criar uma conta administrativa local, execute na pasta `backend`:
 
 ```powershell
-python -m fixhub.cli criar-admin
+python -m cli criar-admin
 ```
 
 O comando pede nome, e-mail e senha. A senha não fica no código; o administrador
@@ -68,8 +79,8 @@ dados e definem permissões diferentes. As rotas protegidas consultam
 `tem_permissao`, então cada objeto responde conforme o seu tipo concreto:
 
 ```python
-from fixhub.domain.permissions import Permissao
-from permissoes import requer_permissao
+from domain.permissions import Permissao
+from routes.permissoes import requer_permissao
 
 @chamados_bp.get("/chamados")
 @requer_permissao(Permissao.LISTAR_PROPRIOS_CHAMADOS)

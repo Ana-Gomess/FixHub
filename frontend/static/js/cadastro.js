@@ -5,7 +5,7 @@ const botaoCadastro = document.getElementById("botaoCadastro");
 const campoSenha = document.getElementById("senha");
 const botaoMostrarSenha = document.getElementById("mostrarSenha");
 
-// Mostrar ou esconder a senha
+
 botaoMostrarSenha.addEventListener("click", () => {
     const senhaEstaOculta = campoSenha.type === "password";
 
@@ -16,7 +16,7 @@ botaoMostrarSenha.addEventListener("click", () => {
         : "Mostrar";
 });
 
-// Enviar cadastro para o backend
+
 formulario.addEventListener("submit", async (evento) => {
     evento.preventDefault();
 

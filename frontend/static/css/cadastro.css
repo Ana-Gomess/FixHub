@@ -23,7 +23,7 @@ body {
         linear-gradient(135deg, #d7e6ff, #f4f7ff 55%, #dceaff);
 }
 
-/* Cabeçalho */
+
 
 .topbar {
     min-height: 90px;
@@ -59,7 +59,7 @@ body {
     font-size: 14px;
 }
 
-/* Área principal */
+
 
 .pagina {
     min-height: calc(100vh - 90px);
@@ -69,7 +69,7 @@ body {
     align-items: center;
 }
 
-/* Cartão de cadastro */
+
 
 .cadastro-card {
     width: 100%;
@@ -81,7 +81,7 @@ body {
     box-shadow: 0 20px 60px rgba(25, 65, 120, 0.13);
 }
 
-/* Logo */
+
 
 .logo {
     text-align: center;
@@ -100,7 +100,7 @@ body {
     letter-spacing: -2px;
 }
 
-/* Introdução */
+
 
 .introducao {
     text-align: center;
@@ -118,7 +118,7 @@ body {
     line-height: 1.6;
 }
 
-/* Campos */
+
 
 .campo {
     margin-bottom: 20px;
@@ -154,7 +154,7 @@ body {
     color: #94a3b8;
 }
 
-/* Senha */
+
 
 .senha-container {
     position: relative;
@@ -176,7 +176,7 @@ body {
     cursor: pointer;
 }
 
-/* Botão de cadastro */
+
 
 #botaoCadastro {
     width: 100%;
@@ -203,7 +203,7 @@ body {
     transform: none;
 }
 
-/* Mensagens */
+
 
 #mensagem {
     min-height: 22px;
@@ -220,7 +220,7 @@ body {
     color: #dc2626;
 }
 
-/* Rodapé */
+
 
 .rodape {
     display: flex;
@@ -243,7 +243,7 @@ body {
     text-decoration: underline;
 }
 
-/* Responsividade */
+
 
 @media (max-width: 600px) {
     .topbar {

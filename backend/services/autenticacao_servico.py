@@ -37,10 +37,16 @@ class AutenticacaoServico:
         return nome, email, senha
 
     def cadastrar_morador(
-        self, nome: str | None, email: str | None, senha: str | None
+        self,
+        nome: str | None,
+        email: str | None,
+        senha: str | None,
+        bloco: str | None,
     ) -> Usuario:
         nome, email, senha = self._normalizar_cadastro(nome, email, senha)
-        morador = Morador.criar_com_senha(nome=nome, email=email, senha=senha)
+        morador = Morador.criar_com_senha(
+            nome=nome, email=email, senha=senha, bloco=bloco
+        )
         try:
             usuario = self._usuarios.salvar(morador)
         except sqlite3.IntegrityError as erro:

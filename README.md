@@ -68,7 +68,8 @@ frontend/
 
 ## Rotas principais da API
 
-- Autenticação: `POST /usuarios`, `POST /login`, `POST /logout` e `GET /sessao`.
+- Cadastro: `GET /blocos` lista A–F; `POST /usuarios` cria a conta com o bloco escolhido.
+- Autenticação: `POST /login`, `POST /logout` e `GET /sessao`.
 - Morador: `POST /chamados`, `GET /chamados` e `GET /chamados/<id>`.
 - Administração: `GET /admin/chamados`, `GET /admin/chamados/contagens` e `GET /admin/moradores`.
 - Atualização de estado: `PATCH /chamados/<id>/estado`.

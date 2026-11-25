@@ -18,9 +18,12 @@ class UsuarioFactory:
         )
         if tipo is None:
             raise DadosInvalidos("O perfil salvo para o usuário é inválido.")
-        return tipo(
-            id=dados.get("id"),
-            nome=dados["nome"],
-            email=dados["email"],
-            senha_hash=dados["senha_hash"],
-        )
+        argumentos = {
+            "id": dados.get("id"),
+            "nome": dados["nome"],
+            "email": dados["email"],
+            "senha_hash": dados["senha_hash"],
+        }
+        if tipo is Morador:
+            argumentos["bloco"] = dados.get("bloco")
+        return tipo(**argumentos)

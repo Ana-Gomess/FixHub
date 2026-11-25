@@ -7,6 +7,7 @@ from domain.errors import (
     DadosInvalidos,
     EmailDuplicado,
 )
+from domain.morador import BLOCOS_DISPONIVEIS
 from routes.permissoes import requer_login
 
 
@@ -15,6 +16,11 @@ autenticacao_bp = Blueprint("autenticacao", __name__)
 
 def _servico():
     return current_app.extensions["fixhub"].autenticacao
+
+
+@autenticacao_bp.get("/blocos")
+def listar_blocos():
+    return jsonify({"blocos": BLOCOS_DISPONIVEIS}), 200
 
 
 @autenticacao_bp.post("/usuarios")
@@ -36,7 +42,10 @@ def cadastrar_usuario():
 
     try:
         usuario = _servico().cadastrar_morador(
-            dados.get("nome"), dados.get("email"), dados.get("senha")
+            dados.get("nome"),
+            dados.get("email"),
+            dados.get("senha"),
+            dados.get("bloco"),
         )
     except EmailDuplicado as erro:
         return jsonify({"erro": str(erro)}), 409

@@ -40,7 +40,9 @@ class Database:
                 email TEXT NOT NULL COLLATE NOCASE UNIQUE,
                 senha_hash TEXT NOT NULL,
                 perfil TEXT NOT NULL
-                    CHECK (perfil IN ('morador', 'administrador'))
+                    CHECK (perfil IN ('morador', 'administrador')),
+                bloco TEXT
+                    CHECK (bloco IS NULL OR bloco IN ('A', 'B', 'C', 'D', 'E', 'F'))
             )
             """,
             """
@@ -77,3 +79,15 @@ class Database:
         with self.transacao() as conexao:
             for comando in comandos:
                 conexao.execute(comando)
+
+            colunas_usuarios = {
+                registro["name"]
+                for registro in conexao.execute("PRAGMA table_info(usuarios)")
+            }
+            if "bloco" not in colunas_usuarios:
+                conexao.execute(
+                    """
+                    ALTER TABLE usuarios ADD COLUMN bloco TEXT
+                    CHECK (bloco IS NULL OR bloco IN ('A', 'B', 'C', 'D', 'E', 'F'))
+                    """
+                )
